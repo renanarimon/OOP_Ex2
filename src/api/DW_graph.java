@@ -1,3 +1,5 @@
+package api;
+
 import api.DirectedWeightedGraph;
 import api.EdgeData;
 import api.NodeData;
@@ -26,6 +28,10 @@ public class DW_graph implements DirectedWeightedGraph {
         return children.get(src).get(dest);
     }
 
+    /**
+     * initialize
+     * @param n
+     */
     @Override
     public void addNode(NodeData n) {
         nodes.put(n.getKey(), n);
@@ -35,6 +41,14 @@ public class DW_graph implements DirectedWeightedGraph {
         this.parents.put(n.getKey(), ComeFrom);
     }
 
+    /**
+     * initialize new edge
+     * add edge to 'children'
+     * add opposite edge to 'parents'
+     * @param src - the source of the edge.
+     * @param dest - the destination of the edge.
+     * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+     */
     @Override
     public void connect(int src, int dest, double w) {
         Edge edge = new Edge(src, dest, w);
@@ -42,11 +56,19 @@ public class DW_graph implements DirectedWeightedGraph {
         this.parents.get(dest).put(src,edge);
     }
 
+    /**
+     * Iterator on nodes
+     * @return
+     */
     @Override
     public Iterator<NodeData> nodeIter() {
         return null;
     }
 
+    /**
+     * Iterator on edges (children)
+     * @return
+     */
     @Override
     public Iterator<EdgeData> edgeIter() {
         return null;
@@ -80,5 +102,18 @@ public class DW_graph implements DirectedWeightedGraph {
     @Override
     public int getMC() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder("Vertices: " + nodeSize() + " Edges: " + edgeSize() + " MC: " + getMC() + "\n");
+        for (int key : nodes.keySet()) {
+            s.append(key).append(": ");
+            for (EdgeData e : children.get(key).values()) {
+                s.append(e);
+            }
+            s.append("\n");
+        }
+        return s.toString();
     }
 }
