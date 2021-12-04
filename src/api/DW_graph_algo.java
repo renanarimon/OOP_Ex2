@@ -3,7 +3,16 @@ package api;
 import api.DirectedWeightedGraph;
 import api.DirectedWeightedGraphAlgorithms;
 import api.NodeData;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,34 +34,19 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return graph;
     }
 
+
     @Override
-    public DirectedWeightedGraph copy() {
-        HashMap<Integer, NodeData> nodes = new HashMap<>();
-        HashMap<Integer, HashMap<Integer, EdgeData>> children = new HashMap<>();
-        HashMap<Integer, HashMap<Integer, EdgeData>> parents = new HashMap<>();
-        int MC = graph.getMC();
-
+    public DirectedWeightedGraph copy(){
+        DirectedWeightedGraph g = new DW_graph();
         Iterator<NodeData> iterNodes = graph.nodeIter();
-        while (iterNodes.hasNext()) {
-            NodeData tmpNode = iterNodes.next();
-            NodeData node = new Node(tmpNode.getLocation(), tmpNode.getKey());
-            nodes.put(node.getKey(), node);
-            HashMap<Integer, EdgeData> goTo = new HashMap<>();
-            HashMap<Integer, EdgeData> comeFrom = new HashMap<>();
-            children.put(node.getKey(), goTo);
-            parents.put(node.getKey(), comeFrom);
+        while (iterNodes.hasNext()){
+            g.addNode(iterNodes.next());
         }
-
         Iterator<EdgeData> iterEdges = graph.edgeIter();
-
-        while (iterEdges.hasNext()) {
-            EdgeData tmp = iterEdges.next();
-            EdgeData edge = new Edge(tmp.getSrc(), tmp.getDest(), tmp.getWeight());
-            children.get(edge.getSrc()).put(edge.getDest(), edge);
-            parents.get(edge.getDest()).put(edge.getSrc(), edge);
+        while (iterEdges.hasNext()){
+            EdgeData e = iterEdges.next();
+            g.connect(e.getSrc(), e.getDest(), e.getWeight());
         }
-
-        DirectedWeightedGraph g = new DW_graph(nodes, children, parents, MC);
 
         return g;
     }
@@ -84,11 +78,76 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public boolean save(String file) {
-        return false;
+        JSONObject obj = new JSONObject();
+        JSONArray Nodes = new JSONArray();
+        JSONArray Edges = new JSONArray();
+
+        Iterator<NodeData> iterNode = graph.nodeIter();
+        while (iterNode.hasNext()){
+            NodeData tmpN = iterNode.next();
+            JSONObject node = new JSONObject();
+            try {
+                node.put("pos", tmpN.getLocation().toString());
+                node.put("id", tmpN.getKey());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Nodes.put(node);
+        }
+
+        Iterator<EdgeData> iterE = graph.edgeIter();
+        while (iterE.hasNext()){
+            EdgeData e = iterE.next();
+            JSONObject edge = new JSONObject();
+            try {
+                edge.put("src", e.getSrc());
+                edge.put("w", e.getWeight());
+                edge.put("dest", e.getDest());
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+            Edges.put(edge);
+        }
+        try {
+//            GsonBuilder gsonBuilder = new GsonBuilder();
+//            gsonBuilder.setPrettyPrinting();
+//            Gson gson = gsonBuilder.create();
+            obj.putOpt("Edges", Edges);
+            obj.putOpt("Nodes", Nodes);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            assert fileWriter != null;
+            fileWriter.write(obj.toString());
+            return true; // successful saved to file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                assert fileWriter != null;
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return false; // unsuccessful saved to file
     }
 
     @Override
     public boolean load(String file) {
+
+
 
         return false;
     }

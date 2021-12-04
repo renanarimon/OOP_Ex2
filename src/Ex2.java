@@ -78,12 +78,13 @@ public class Ex2 {
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
         algo.init(dw);
         DirectedWeightedGraph d = algo.copy();
-        DW_graph d1 = (DW_graph) d;
 
-        d1.removeEdge(0, 16);
-        dw.removeEdge(0,1);
-        System.out.println(dw1.getChildren());
-        System.out.println(d1.getChildren());
+        dw.removeEdge(0, 16);
+        System.out.println(dw1);
+
+
+        algo.save("G4.json");
+
 
 
 

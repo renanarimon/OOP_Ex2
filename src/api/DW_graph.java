@@ -18,14 +18,10 @@ public class DW_graph implements DirectedWeightedGraph {
         this.nodes = new HashMap<>();
         this.children = new HashMap<>();
         this.parents = new HashMap<>();
+        this.edgesCount = 0;
+
     }
 
-    public DW_graph(HashMap<Integer, NodeData> nodes, HashMap<Integer, HashMap<Integer, EdgeData>> children, HashMap<Integer, HashMap<Integer, EdgeData>> parents, int MC){
-        this.nodes = nodes;
-        this.children = children;
-        this.parents = parents;
-        this.MC = MC;
-    }
 
     public HashMap<Integer, NodeData> getNodes() {
         return nodes;
@@ -62,6 +58,7 @@ public class DW_graph implements DirectedWeightedGraph {
         HashMap<Integer, EdgeData> ComeFrom = new HashMap<>();
         this.children.put(n.getKey(), GoTo);
         this.parents.put(n.getKey(), ComeFrom);
+        MC++;
     }
 
     /**
@@ -78,6 +75,8 @@ public class DW_graph implements DirectedWeightedGraph {
         Edge edge = new Edge(src, dest, w);
         this.children.get(src).put(dest, edge);
         this.parents.get(dest).put(src, edge);
+        edgesCount++;
+        MC++;
     }
 
     /**
@@ -115,9 +114,11 @@ public class DW_graph implements DirectedWeightedGraph {
             int dest = tmp.getDest();
             if (src == key || dest == key) {
                 removeEdge(src, dest);
+                MC--;
             }
         }
         nodes.remove(key);
+        MC++;
         return node;
     }
 
@@ -126,6 +127,8 @@ public class DW_graph implements DirectedWeightedGraph {
         EdgeData edge = children.get(src).get(dest);
         children.get(src).remove(dest);
         parents.get(dest).remove(src);
+        edgesCount--;
+        MC++;
         return edge;
     }
 
@@ -136,13 +139,7 @@ public class DW_graph implements DirectedWeightedGraph {
 
     @Override
     public int edgeSize() {
-        int count = 0;
-        Iterator<EdgeData> iter = edgeIter();
-        while (iter.hasNext()) {
-            count++;
-            iter.next();
-        }
-        return count;
+        return edgesCount;
     }
 
     @Override
