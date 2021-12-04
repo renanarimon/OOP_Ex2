@@ -4,8 +4,10 @@ import api.DirectedWeightedGraph;
 import api.EdgeData;
 import api.NodeData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class DW_graph implements DirectedWeightedGraph {
     HashMap<Integer, NodeData> nodes; // (key, node)
@@ -17,6 +19,19 @@ public class DW_graph implements DirectedWeightedGraph {
         this.children = new HashMap<>();
         this.parents = new HashMap<>();
     }
+
+    public HashMap<Integer, NodeData> getNodes() {
+        return nodes;
+    }
+
+    public HashMap<Integer, HashMap<Integer, EdgeData>> getChildren() {
+        return children;
+    }
+
+    public HashMap<Integer, HashMap<Integer, EdgeData>> getParents() {
+        return parents;
+    }
+
 
     @Override
     public NodeData getNode(int key) {
@@ -30,6 +45,7 @@ public class DW_graph implements DirectedWeightedGraph {
 
     /**
      * initialize
+     *
      * @param n
      */
     @Override
@@ -45,19 +61,21 @@ public class DW_graph implements DirectedWeightedGraph {
      * initialize new edge
      * add edge to 'children'
      * add opposite edge to 'parents'
-     * @param src - the source of the edge.
+     *
+     * @param src  - the source of the edge.
      * @param dest - the destination of the edge.
-     * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+     * @param w    - positive weight representing the cost (aka time, price, etc) between src-->dest.
      */
     @Override
     public void connect(int src, int dest, double w) {
         Edge edge = new Edge(src, dest, w);
-        this.children.get(src).put(dest,edge);
-        this.parents.get(dest).put(src,edge);
+        this.children.get(src).put(dest, edge);
+        this.parents.get(dest).put(src, edge);
     }
 
     /**
      * Iterator on nodes
+     *
      * @return
      */
     @Override
@@ -67,6 +85,7 @@ public class DW_graph implements DirectedWeightedGraph {
 
     /**
      * Iterator on edges (children)
+     *
      * @return
      */
     @Override
@@ -81,22 +100,42 @@ public class DW_graph implements DirectedWeightedGraph {
 
     @Override
     public NodeData removeNode(int key) {
-        return null;
+        NodeData node = nodes.get(key);
+        Iterator<EdgeData> iter = this.edgeIter();
+        while (iter.hasNext()) {
+            EdgeData tmp = iter.next();
+            int src = tmp.getSrc();
+            int dest = tmp.getDest();
+            if (src == key || dest == key) {
+                removeEdge(src, dest);
+            }
+        }
+        nodes.remove(key);
+        return node;
     }
 
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        return null;
+        EdgeData edge = children.get(src).get(dest);
+        children.get(src).remove(dest);
+        parents.get(dest).remove(src);
+        return edge;
     }
 
     @Override
     public int nodeSize() {
-        return 0;
+        return nodes.size();
     }
 
     @Override
     public int edgeSize() {
-        return 0;
+        int count = 0;
+        Iterator<EdgeData> iter = edgeIter();
+        while (iter.hasNext()) {
+            count++;
+            iter.next();
+        }
+        return count;
     }
 
     @Override

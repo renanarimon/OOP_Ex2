@@ -5,6 +5,7 @@ import com.google.gson.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Iterator;
 
 /**
  * This class is the main class for Ex2 - your implementation will be tested using this class.
@@ -72,6 +73,28 @@ public class Ex2 {
 
     public static void main(String[] args) {
         DirectedWeightedGraph dw = getGrapg("data/G1.json");
-        System.out.println(dw);
+        DW_graph dw1 = (DW_graph) dw;
+
+        Iterator<EdgeData> iter = dw1.edgeIter();
+        while (iter.hasNext()){
+            EdgeData tmp = iter.next();
+            System.out.println("src:" + tmp.getSrc());
+            System.out.println("dest:" + tmp.getDest());
+//            System.out.println("dest" + iter.next().getDest());
+        }
+//        System.out.println(dw1);
+
+        System.out.println("children"+dw1.getChildren());
+        System.out.println("parents"+dw1.getParents());
+
+        dw1.removeNode(1);
+
+//        System.out.println(dw1);
+        System.out.println("children"+dw1.getChildren());
+        System.out.println("parents"+dw1.getParents());
+
+
+
+
     }
 }

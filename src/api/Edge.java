@@ -50,6 +50,6 @@ public class Edge implements EdgeData {
 
     @Override
     public String toString() {
-        return "("+getSrc()+"->"+getDest()+"), "+"w="+getWeight();
+        return "("+getSrc()+"->"+getDest()+") "+"w:"+getWeight();
     }
 }
