@@ -75,23 +75,17 @@ public class Ex2 {
         DirectedWeightedGraph dw = getGrapg("data/G1.json");
         DW_graph dw1 = (DW_graph) dw;
 
-        Iterator<EdgeData> iter = dw1.edgeIter();
-        while (iter.hasNext()){
-            EdgeData tmp = iter.next();
-            System.out.println("src:" + tmp.getSrc());
-            System.out.println("dest:" + tmp.getDest());
-//            System.out.println("dest" + iter.next().getDest());
-        }
-//        System.out.println(dw1);
+        DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
+        algo.init(dw);
+        DirectedWeightedGraph d = algo.copy();
+        DW_graph d1 = (DW_graph) d;
 
-        System.out.println("children"+dw1.getChildren());
-        System.out.println("parents"+dw1.getParents());
+        d1.removeEdge(0, 16);
+        dw.removeEdge(0,1);
+        System.out.println(dw1.getChildren());
+        System.out.println(d1.getChildren());
 
-        dw1.removeNode(1);
 
-//        System.out.println(dw1);
-        System.out.println("children"+dw1.getChildren());
-        System.out.println("parents"+dw1.getParents());
 
 
 

@@ -20,6 +20,13 @@ public class DW_graph implements DirectedWeightedGraph {
         this.parents = new HashMap<>();
     }
 
+    public DW_graph(HashMap<Integer, NodeData> nodes, HashMap<Integer, HashMap<Integer, EdgeData>> children, HashMap<Integer, HashMap<Integer, EdgeData>> parents, int MC){
+        this.nodes = nodes;
+        this.children = children;
+        this.parents = parents;
+        this.MC = MC;
+    }
+
     public HashMap<Integer, NodeData> getNodes() {
         return nodes;
     }
