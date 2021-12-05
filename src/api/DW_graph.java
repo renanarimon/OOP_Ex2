@@ -10,9 +10,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class DW_graph implements DirectedWeightedGraph {
-    HashMap<Integer, NodeData> nodes; // (key, node)
-    HashMap<Integer, HashMap<Integer, EdgeData>> children; //(src (dest, edge) , node =src
-    HashMap<Integer, HashMap<Integer, EdgeData>> parents; // (dest (src, edge) , node =dest
+    private HashMap<Integer, NodeData> nodes; // (key, node)
+    private HashMap<Integer, HashMap<Integer, EdgeData>> children; //(src (dest, edge) , node =src
+    private HashMap<Integer, HashMap<Integer, EdgeData>> parents; // (dest (src, edge) , node =dest
+    private int MC;
+    private int edgesCount;
 
     public DW_graph() {
         this.nodes = new HashMap<>();
@@ -86,7 +88,8 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        return null;
+        Iterator<NodeData> nodeIter = this.nodes.values().iterator();
+        return nodeIter;
     }
 
     /**
@@ -96,12 +99,22 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<EdgeData> edgeIter() {
-        return null;
+        ArrayList<EdgeData> allEdge = new ArrayList<>();
+        for (int src : this.children.keySet()) {
+            for (int dest : this.children.get(src).keySet()) {
+                allEdge.add(children.get(src).get(dest));
+            }
+        }
+        return allEdge.iterator();
     }
 
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        return null;
+        ArrayList<EdgeData> allEdge = new ArrayList<>();
+        for (int dest : this.children.get(node_id).keySet()) {
+            allEdge.add(this.children.get(node_id).get(dest));
+        }
+        return allEdge.iterator();
     }
 
     @Override
@@ -144,7 +157,7 @@ public class DW_graph implements DirectedWeightedGraph {
 
     @Override
     public int getMC() {
-        return 0;
+        return this.MC;
     }
 
     @Override
