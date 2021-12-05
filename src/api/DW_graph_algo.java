@@ -16,6 +16,8 @@ import java.util.*;
 
 public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     private DirectedWeightedGraph graph;
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
+
 
     public DW_graph_algo() {
         this.graph = new DW_graph();
@@ -33,14 +35,14 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
 
     @Override
-    public DirectedWeightedGraph copy(){
+    public DirectedWeightedGraph copy() {
         DirectedWeightedGraph g = new DW_graph();
         Iterator<NodeData> iterNodes = graph.nodeIter();
-        while (iterNodes.hasNext()){
+        while (iterNodes.hasNext()) {
             g.addNode(iterNodes.next());
         }
         Iterator<EdgeData> iterEdges = graph.edgeIter();
-        while (iterEdges.hasNext()){
+        while (iterEdges.hasNext()) {
             EdgeData e = iterEdges.next();
             g.connect(e.getSrc(), e.getDest(), e.getWeight());
         }
@@ -119,11 +121,45 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        List<NodeData> path = shortestPath(src, dest);
+        if (path !=null){
+            return graph.getNode(dest).getWeight();
+        }
+
+        return -1;
+
     }
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
+        NodeData start = graph.getNode(src);
+        NodeData end = graph.getNode(dest);
+        List<NodeData> visited = new ArrayList<>();
+        PriorityQueue<NodeData> queue = new PriorityQueue<>(Comparator.comparingDouble(NodeData::getWeight));
+        Iterator<NodeData> iterN = graph.nodeIter();
+        while (iterN.hasNext()) {
+            iterN.next().setWeight(INFINITY);
+        }
+        start.setWeight(0.0);
+        queue.add(start);
+        while ((!queue.isEmpty())) {
+            NodeData curr = queue.poll();
+            visited.add(curr);
+            Iterator<EdgeData> iter = graph.edgeIter(curr.getKey());
+            while (iter.hasNext()) {
+                EdgeData edge = iter.next();
+                NodeData tmp = graph.getNode(edge.getDest());
+                if (!visited.contains(tmp)) {
+                    double tmpDist = curr.getWeight() + edge.getWeight();
+                    tmp.setWeight(Math.min(tmpDist, tmp.getWeight()));
+                    queue.add(tmp);
+                    if (tmp.getKey() == end.getKey()) {
+                        visited.add(tmp);
+                        return visited;
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -147,7 +183,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         JSONArray Edges = new JSONArray();
 
         Iterator<NodeData> iterNode = graph.nodeIter();
-        while (iterNode.hasNext()){
+        while (iterNode.hasNext()) {
             NodeData tmpN = iterNode.next();
             JSONObject node = new JSONObject();
             try {
@@ -160,7 +196,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         }
 
         Iterator<EdgeData> iterE = graph.edgeIter();
-        while (iterE.hasNext()){
+        while (iterE.hasNext()) {
             EdgeData e = iterE.next();
             JSONObject edge = new JSONObject();
             try {
@@ -194,8 +230,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
             return true; // successful saved to file
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 assert fileWriter != null;
                 fileWriter.flush();
@@ -210,10 +245,30 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public boolean load(String file) {
+        try {
+            DirectedWeightedGraph G = new DW_graph();
+            JsonObject json = new JsonParser().parse(new FileReader(file)).getAsJsonObject();
+            JsonArray E = json.getAsJsonArray("Edges");
+            JsonArray V = json.getAsJsonArray("Nodes");
 
-
-
-        return false;
+            for (JsonElement node: V){
+                String[] pos = ((JsonObject) node).get("pos").getAsString().split(",");
+                int id = Integer.parseInt(((JsonObject) node).get("id").getAsString());
+                GeoLocation location = new geo_Location(Double.parseDouble(pos[0]),Double.parseDouble(pos[1]),Double.parseDouble(pos[2]));
+                NodeData newN = new Node(location,id);
+                G.addNode(newN);
+            }
+            //run by json and convert it to Edges
+            for (JsonElement edge : E){
+                JsonObject e = (JsonObject)edge;
+                G.connect(e.get("src").getAsInt(),e.get("dest").getAsInt(),e.get("w").getAsDouble());
+            }
+            this.graph = G;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 

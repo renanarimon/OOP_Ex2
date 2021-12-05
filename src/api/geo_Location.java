@@ -30,7 +30,10 @@ public class geo_Location implements GeoLocation {
 
     @Override
     public double distance(GeoLocation g) {
-        return 0;
+        double t1 = Math.pow(x() - g.x(), 2);
+        double t2 = Math.pow(y() - g.y(), 2);
+        double t3 = Math.pow(z() - g.z(), 2);
+        return Math.sqrt(t1 + t2 + t3);
     }
 
     @Override
