@@ -76,20 +76,16 @@ public class Ex2 {
         DW_graph dw1 = (DW_graph) dw;
 
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
+        Iterator<EdgeData> iter = dw.edgeIter();
+
         algo.init(dw);
-        DirectedWeightedGraph d = algo.copy();
-
-        dw.removeEdge(0, 16);
-        System.out.println(dw1);
-
-
         algo.save("G4.json");
+        System.out.println(algo.load("G4.json"));
 
 
-
-
-
-
-
+//        for (NodeData n: algo.shortestPath(0,2)){
+//            System.out.println(n.getKey()+","+n.getWeight());
+//        }
+//        System.out.println(algo.shortestPathDist(0,2));
     }
 }

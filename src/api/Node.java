@@ -9,13 +9,6 @@ public class Node implements NodeData {
     private double weight;
     private String info;
 
-
-//    enum color{
-//        WHITE,
-//        GRAY,
-//        BLACK
-//    }
-
     public Node(GeoLocation location, int key) {
         this.location = location;
         this.key = key;
@@ -67,4 +60,10 @@ public class Node implements NodeData {
     public void setTag(int t) {
         this.tag = t;
     }
+
+    @Override
+    public String toString() {
+        return key+"";
+    }
 }
+
