@@ -7,13 +7,20 @@ public class Node implements NodeData {
     private int key;
     private int tag;
     private double weight;
+    private NodeData father;
     private String info;
 
     public Node(GeoLocation location, int key) {
         this.location = location;
         this.key = key;
         this.tag = 0;
+        this.weight = 0.0;
+        this.father = null;
         this.info = "";
+    }
+
+    public void setFather(NodeData father) {
+        this.father = father;
     }
 
     @Override

@@ -6,6 +6,8 @@ import com.google.gson.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class is the main class for Ex2 - your implementation will be tested using this class.
@@ -60,7 +62,7 @@ public class Ex2 {
     }
 
     /**
-     * This static function will run your GUI using the json fime.
+     * This static function will run your GUI using the json file.
      *
      * @param json_file - a json file (e.g., G1.json - G3.gson)
      */
@@ -72,15 +74,29 @@ public class Ex2 {
     }
 
     public static void main(String[] args) {
-        DirectedWeightedGraph dw = getGrapg("data/G1.json");
+        DirectedWeightedGraph dw = getGrapg("data/1000Nodes.json");
         DW_graph dw1 = (DW_graph) dw;
 
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
-        Iterator<EdgeData> iter = dw.edgeIter();
+        System.out.println(dw);
 
         algo.init(dw);
-        algo.save("G4.json");
-        System.out.println(algo.load("G4.json"));
+//        System.out.println(algo.shortestPathDist(5, 900));
+//        System.out.println(algo.center());
+//        System.out.println(algo.shortestPath(2,10));
+
+
+
+        List<NodeData> list = new LinkedList<>();
+        Iterator<NodeData> iterator = dw.nodeIter();
+        while (iterator.hasNext()){
+            list.add(iterator.next());
+        }
+//        System.out.println(list);
+        System.out.println(algo.tsp(list));
+
+//        System.out.println();
+//        System.out.println(algo.center());
 
 
 //        for (NodeData n: algo.shortestPath(0,2)){

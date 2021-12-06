@@ -122,7 +122,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     @Override
     public double shortestPathDist(int src, int dest) {
         List<NodeData> path = shortestPath(src, dest);
-        if (path !=null){
+        if (path != null) {
             return graph.getNode(dest).getWeight();
         }
 
@@ -130,6 +130,13 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     }
 
+    /**
+     * Time Complexity: O(V + E*logV)
+     *
+     * @param src  - start node
+     * @param dest - end (target) node
+     * @return
+     */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
         NodeData start = graph.getNode(src);
@@ -163,19 +170,142 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return null;
     }
 
+    /**
+     * if adding the edge make the path shorter --> add edge.
+     * change the node weight.
+     *
+     * @param e: new edge
+     */
+    private void relax(EdgeData e) {
+        Node src = (Node) graph.getNode(e.getSrc());
+        Node dest = (Node) graph.getNode(e.getDest());
+        if (dest.getWeight() > (src.getWeight() + e.getWeight())) {
+            dest.setWeight(src.getWeight() + e.getWeight());
+            dest.setFather(src);
+        }
+    }
+
+    private void shortPath(int src) {
+        Iterator<NodeData> iter = graph.nodeIter();
+        while (iter.hasNext()) {
+            Node node = (Node) iter.next();
+            node.setFather(null);
+            if (node.getKey() == src) {
+                node.setWeight(0);
+            } else {
+                node.setWeight(INFINITY);
+            }
+        }
+        //
+        PriorityQueue<NodeData> pq = new PriorityQueue<>(Comparator.comparing(NodeData::getWeight));
+        iter = graph.nodeIter();
+        while (iter.hasNext()) {
+            pq.add(iter.next());
+        }
+
+        while (!pq.isEmpty()) {
+            NodeData curr = pq.poll();
+            Iterator<EdgeData> iterE = graph.edgeIter(curr.getKey());
+            while (iterE.hasNext()) {
+                relax(iterE.next());
+            }
+            PriorityQueue<NodeData> pq2 = new PriorityQueue<>(Comparator.comparing(NodeData::getWeight));
+            pq2.addAll(pq);
+            pq = pq2;
+        }
+    }
+
+
+    private double maxShortPath(int src) {
+        shortPath(src);
+        Iterator<NodeData> iter = getGraph().nodeIter();
+        double maxW = Integer.MIN_VALUE;
+        while (iter.hasNext()) {
+            double tmpW = iter.next().getWeight();
+            if (tmpW > maxW) {
+                maxW = tmpW;
+            }
+        }
+        return maxW;
+    }
+
+    private NodeData minShortPath(int src, List<NodeData> cities) {
+        shortPath(src);
+        double minW = Integer.MAX_VALUE;
+        NodeData ans = graph.getNode(src);
+        for (NodeData n : cities) {
+            if (n.getWeight() < minW) {
+                minW = n.getWeight();
+                ans = n;
+            }
+        }
+        return ans;
+    }
+
+
     @Override
     public NodeData center() {
-//        if (isConnected()){
-//
-//        }
-        return null;
+        if (!isConnected()) {
+            return null;
+        }
+        Iterator<NodeData> iter1 = graph.nodeIter();
+        NodeData nodeAns = graph.getNode(0);
+        double minDist = Integer.MAX_VALUE;
+        while (iter1.hasNext()) {
+            NodeData tmpNode = iter1.next();
+            double tmpMaxDist = maxShortPath(tmpNode.getKey());
+            if (tmpMaxDist < minDist) {
+                minDist = tmpMaxDist;
+                nodeAns = tmpNode;
+            }
+        }
+        return nodeAns;
     }
 
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        return null;
-    }
+        if (!isConnected()) {
+            return null;
+        }
+        List<NodeData> ans = new LinkedList<>();
+        NodeData currNode = cities.remove(0);
+        ans.add(currNode);
+        NodeData bestNode;
+        while (!cities.isEmpty()) {
+            bestNode = minShortPath(currNode.getKey(), cities);
+            ans.add(bestNode);
+            cities.remove(bestNode);
+            currNode = bestNode;
+        }
+        return ans;
+}
 
+
+//    @Override
+//    public List<NodeData> tsp(List<NodeData> cities) {
+//        if (!isConnected()) {
+//            return null;
+//        }
+//        List<NodeData> ans = new LinkedList<>();
+//        ans.add(cities.remove(0));
+//        NodeData currNode = ans.get(0);
+//        double minDist = Integer.MAX_VALUE;
+//        NodeData bestNode = null;
+//        while (!cities.isEmpty()) {
+//            for (NodeData nodeData : cities) {
+//                double tmpDist = shortestPathDist(currNode.getKey(), nodeData.getKey());
+//                if (tmpDist < minDist) {
+//                    minDist = tmpDist;
+//                    bestNode = nodeData;
+//                }
+//            }
+//            ans.add(bestNode);
+//            cities.remove(bestNode);
+//            currNode = bestNode;
+//            minDist = INFINITY;
+//        }
+//        return ans;
+//    }
     @Override
     public boolean save(String file) {
         JSONObject obj = new JSONObject();
@@ -251,25 +381,25 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
             JsonArray E = json.getAsJsonArray("Edges");
             JsonArray V = json.getAsJsonArray("Nodes");
 
-            for (JsonElement node: V){
+            for (JsonElement node : V) {
                 String[] pos = ((JsonObject) node).get("pos").getAsString().split(",");
                 int id = Integer.parseInt(((JsonObject) node).get("id").getAsString());
-                GeoLocation location = new geo_Location(Double.parseDouble(pos[0]),Double.parseDouble(pos[1]),Double.parseDouble(pos[2]));
-                NodeData newN = new Node(location,id);
+                GeoLocation location = new geo_Location(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]), Double.parseDouble(pos[2]));
+                NodeData newN = new Node(location, id);
                 G.addNode(newN);
             }
             //run by json and convert it to Edges
-            for (JsonElement edge : E){
-                JsonObject e = (JsonObject)edge;
-                G.connect(e.get("src").getAsInt(),e.get("dest").getAsInt(),e.get("w").getAsDouble());
+            for (JsonElement edge : E) {
+                JsonObject e = (JsonObject) edge;
+                G.connect(e.get("src").getAsInt(), e.get("dest").getAsInt(), e.get("w").getAsDouble());
             }
             this.graph = G;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
+
         return true;
     }
-
 
 }
