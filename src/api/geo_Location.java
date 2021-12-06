@@ -15,17 +15,17 @@ public class geo_Location implements GeoLocation {
 
     @Override
     public double x() {
-        return 0;
+        return x;
     }
 
     @Override
     public double y() {
-        return 0;
+        return y;
     }
 
     @Override
     public double z() {
-        return 0;
+        return z;
     }
 
     @Override
