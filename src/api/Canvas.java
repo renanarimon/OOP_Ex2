@@ -7,30 +7,46 @@ package api;/*
 import java.awt.Shape;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class Canvas extends JFrame implements ActionListener, MouseListener {
+    DirectedWeightedGraph graph;
+
     final double EPSILON = 1E-5;
     int Width = 500;
     int Height = 500;
-    DirectedWeightedGraph graph;
     int R = 5;
-    Graphics graphics;
+
+    JTextField fieldSrc, filedDest, filedWeight;
+    int src, dest;
+    double weight;
+    boolean PaintShortedPath=false;
+    List<NodeData> path;
+    double dist;
+    JButton shortedPathBtn;
+    JButton addEdgeBtn;
+    JButton removeEdgeBtn;
+
     MenuBar menuBar;
     MenuItem Edit, geo, save, load, is_connected, shorted_path, shorted_path_distance, center, tsp;
     Menu menu, File, Algo;
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
-        graphics = getGraphics();
+
         runCan();
     }
+
 
     public void runCan() {
         this.setName("renana & talya");
@@ -39,9 +55,9 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.setSize(Width, Height);
         this.setResizable(false);
         this.addMouseListener(this);
-
         scaleGarph();
         setMenu();
+        scanSrcDest();
     }
 
     private void setMenu() {
@@ -78,8 +94,41 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         menu.add(geo);
         menuBar.add(menu);
         setMenuBar(menuBar);
-//        menuBar.setVisible(true);
 
+    }
+
+    private void scanSrcDest() {
+        JPanel panel = new JPanel();
+        shortedPathBtn = new JButton("shorted Path");
+        addEdgeBtn = new JButton("add Edge");
+        removeEdgeBtn = new JButton("remove Edge");
+        shortedPathBtn.addActionListener(this);
+        addEdgeBtn.addActionListener(this);
+        removeEdgeBtn.addActionListener(this);
+
+        JLabel labSrc = new JLabel("src");
+        JLabel labDest = new JLabel("Dest");
+        JLabel labWeight = new JLabel("Weight");
+
+        this.fieldSrc = new JTextField(3);
+        this.filedDest = new JTextField(3);
+        this.filedWeight = new JTextField(5);
+        this.filedDest.setBounds(Width-50, Height-100, 20, 10);
+
+        panel.add(labSrc);
+        panel.add(fieldSrc);
+        panel.add(labDest);
+        panel.add(filedDest);
+        panel.add(labWeight);
+        panel.add(filedWeight);
+        panel.add(shortedPathBtn);
+        panel.add(addEdgeBtn);
+        panel.add(removeEdgeBtn);
+        panel.setBounds(0, 0, 100, 100);
+
+        this.add(panel);
+
+        fieldSrc.addActionListener(this);
     }
 
     /**
@@ -209,7 +258,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         NodeData node = new Node(geo, key);
         graph.addNode(node);
         DrawNode(node, R, (Graphics2D) getGraphics());
-        System.out.println(node);
+        System.out.println(graph);
     }
 
     @Override
