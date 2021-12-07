@@ -10,20 +10,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
 
-public class Canvas extends JFrame implements ActionListener {
+public class Canvas extends JFrame implements ActionListener, MouseListener {
+    final double EPSILON = 1E-5;
     int Width = 500;
     int Height = 500;
     DirectedWeightedGraph graph;
     int R = 5;
+    Graphics graphics;
     MenuBar menuBar;
     MenuItem Edit, geo, save, load, is_connected, shorted_path, shorted_path_distance, center, tsp;
     Menu menu, File, Algo;
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
+        graphics = getGraphics();
         runCan();
     }
 
@@ -32,6 +37,9 @@ public class Canvas extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setBounds(0, 0, Width - 100, Height - 100);
         this.setSize(Width, Height);
+        this.setResizable(false);
+        this.addMouseListener(this);
+
         scaleGarph();
         setMenu();
     }
@@ -142,10 +150,15 @@ public class Canvas extends JFrame implements ActionListener {
         return min;
     }
 
-
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        paintComponents(g);
+    }
+
+    @Override
+    public void paintComponents(Graphics g) {
+        super.paintComponents(g);
         Graphics2D g2D = (Graphics2D) g;
         Iterator<NodeData> iterN = graph.nodeIter();
         while (iterN.hasNext()) {
@@ -183,11 +196,43 @@ public class Canvas extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == center) {
-            // NodeData
+//            NodeData cen=
         }
     }
 
 
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int key = graph.nodeSize();
+        GeoLocation geo = new Geo_Location(e.getX(), e.getY(), 0.0);
+        NodeData node = new Node(geo, key);
+        graph.addNode(node);
+        DrawNode(node, R, (Graphics2D) getGraphics());
+        System.out.println(node);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 }
 
 
