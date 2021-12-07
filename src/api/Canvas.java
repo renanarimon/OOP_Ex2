@@ -40,6 +40,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     MenuBar menuBar;
     MenuItem Edit, geo, save, load, is_connected, shorted_path, shorted_path_distance, center, tsp;
     Menu menu, File, Algo;
+    NodeData centerOn = null;
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
@@ -217,10 +218,38 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         while (iterE.hasNext()) {
             DrawEdge(iterE.next(), g2D);
         }
+        if (centerOn != null) {
+            g.setColor(Color.BLUE);
+            g.fillOval((int) centerOn.getLocation().x() - R, (int) centerOn.getLocation().y() - R, R * 3, R * 3);
+            centerOn = null;
+        }
+        if(PaintShortedPath){
+            drawShortPath(g);
+            path.clear();
+            PaintShortedPath=false;
+        }
     }
+   private void drawShortPath(Graphics g){
+       NodeData pre=null;
+       int x_p=0;
+       int y_p=0;
+       System.out.println(path);
+       for (NodeData n : path) {
+           Color color = new Color(58, 213, 131);
+           g.setColor(color);
+           int x = (int) n.getLocation().x() - R;
+           int y = (int) n.getLocation().y() - R;
+           g.fillOval(x, y, R * 3, R * 3);
+           if(pre!=null) {
+               g.drawLine(x, y, x_p, y_p);
+           }
+           pre = n;
+           x_p = x;
+           y_p = y;
+       }
+   }
 
-
-    private void DrawNode(NodeData node, int r, Graphics2D g) {
+    public void DrawNode(NodeData node, int r, Graphics2D g) {
         GeoLocation loc = node.getLocation();
         Node node1 = (Node) node;
         GeoLocation oldLoc = node1.getOldLocation();
@@ -244,11 +273,55 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        DirectedWeightedGraphAlgorithms graph_algo = new DW_graph_algo();
         if (e.getSource() == center) {
-//            NodeData cen=
+            graph_algo.init(graph);
+            this.centerOn = graph_algo.center();
+            repaint();
+        } else if (e.getSource() == load) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                if (graph_algo.load(selectedFile.getAbsolutePath())) {
+                    graph = graph_algo.getGraph();
+                    repaint();
+                }
+            }
         }
-    }
+        else if(e.getSource()==shortedPathBtn){
+            src = Integer.parseInt(fieldSrc.getText());
+            dest = Integer.parseInt(filedDest.getText());
+            System.out.println(src);
+            graph_algo.init(graph);
+            dist=graph_algo.shortestPathDist(src,dest);
+            path = graph_algo.shortestPath(src,dest);
+            PaintShortedPath=true;
+            repaint();
+        }
+        else if (e.getSource() == addEdgeBtn){
+            src = Integer.parseInt(fieldSrc.getText());
+            dest = Integer.parseInt(filedDest.getText());
+            weight = Double.parseDouble(filedWeight.getText());
+            graph_algo.init(graph);
+            EdgeData edge = new Edge(src, dest, weight);
+            graph.connect(src, dest, weight);
+            System.out.println(graph);
+            DrawEdge(edge, (Graphics2D) getGraphics());
+            fieldSrc.setText("");
+            filedDest.setText("");
+            filedWeight.setText("");
+        }
+        else if(e.getSource() == removeEdgeBtn){
+            src = Integer.parseInt(fieldSrc.getText());
+            dest = Integer.parseInt(filedDest.getText());
+            graph.removeEdge(src, dest);
+            graph_algo.init(graph);
+            repaint();
+        }
 
+    }
 
 
     @Override
