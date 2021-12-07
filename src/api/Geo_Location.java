@@ -2,12 +2,14 @@ package api;
 
 import api.GeoLocation;
 
-public class geo_Location implements GeoLocation {
+import java.text.DecimalFormat;
+
+public class Geo_Location implements GeoLocation {
     private double x;
     private double y;
     private double z;
 
-    public geo_Location(double x, double y, double z) {
+    public Geo_Location(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -38,6 +40,9 @@ public class geo_Location implements GeoLocation {
 
     @Override
     public String toString() {
-        return x + "," + y + "," + z;
+        DecimalFormat df = new DecimalFormat("#.#####");
+        String x1 = df.format(x);
+        String y1 = df.format(y);
+        return x1 + "," + y1 + "," + z;
     }
 }

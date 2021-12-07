@@ -1,8 +1,5 @@
 package api;
 
-import api.DirectedWeightedGraph;
-import api.DirectedWeightedGraphAlgorithms;
-import api.NodeData;
 import com.google.gson.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -384,7 +381,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
             for (JsonElement node : V) {
                 String[] pos = ((JsonObject) node).get("pos").getAsString().split(",");
                 int id = Integer.parseInt(((JsonObject) node).get("id").getAsString());
-                GeoLocation location = new geo_Location(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]), Double.parseDouble(pos[2]));
+                GeoLocation location = new Geo_Location(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]), Double.parseDouble(pos[2]));
                 NodeData newN = new Node(location, id);
                 G.addNode(newN);
             }

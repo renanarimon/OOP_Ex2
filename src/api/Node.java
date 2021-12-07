@@ -4,6 +4,7 @@ package api;
 
 public class Node implements NodeData {
     private GeoLocation location;
+    private GeoLocation oldLocation;
     private int key;
     private int tag;
     private double weight;
@@ -12,11 +13,16 @@ public class Node implements NodeData {
 
     public Node(GeoLocation location, int key) {
         this.location = location;
+        this.oldLocation = new Geo_Location(location.x(), location.y(), location.z());
         this.key = key;
         this.tag = 0;
         this.weight = 0.0;
         this.father = null;
         this.info = "";
+    }
+
+    public GeoLocation getOldLocation() {
+        return oldLocation;
     }
 
     public void setFather(NodeData father) {

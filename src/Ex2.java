@@ -6,15 +6,12 @@ import com.google.gson.*;
 import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is the main class for Ex2 - your implementation will be tested using this class.
  */
 public class Ex2 {
-    public static final int Height = 1000, Width = 1500;
+    public static final int Height = 500, Width = 500;
 
     /**
      * This static function will be used to test your implementation
@@ -33,7 +30,7 @@ public class Ex2 {
             for (JsonElement node : V) {
                 String[] pos = ((JsonObject) node).get("pos").getAsString().split(",");
                 int id = ((JsonObject) node).get("id").getAsInt();
-                GeoLocation location = new geo_Location(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]), Double.parseDouble(pos[2]));
+                GeoLocation location = new Geo_Location(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]), Double.parseDouble(pos[2]));
                 NodeData newN = new Node(location, id);
                 ans.addNode(newN);
             }
@@ -69,31 +66,13 @@ public class Ex2 {
      */
     public static void runGUI(String json_file) {
         DirectedWeightedGraphAlgorithms alg = getGrapgAlgo(json_file);
-        JFrame frame = new JFrame("renana & talya");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(Width, Height);
+        Canvas canvas = new Canvas(alg.getGraph());
+        canvas.setVisible(true);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
-        Canvas canvas = new Canvas(alg.getGraph(), Width, Height);
 
-//        panel.add(canvas);
-//        frame.add(panel);
-        frame.getContentPane().add(canvas);
-//        canvas.paintComponents();
-
-        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        DirectedWeightedGraph dw = getGrapg("data/G1.json");
-//
-        GeoLocation geo = dw.getNode(4).getLocation();
-        GeoLocation g1 = dw.getNode(13).getLocation();
-        System.out.println(geo.x());
-        System.out.println(geo.distance(g1));
-
-
         runGUI("data/G1.json");
 
 
