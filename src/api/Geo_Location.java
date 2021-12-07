@@ -39,6 +39,7 @@ public class Geo_Location implements GeoLocation {
     }
 
     @Override
+
     public String toString() {
         DecimalFormat df = new DecimalFormat("#.#####");
         String x1 = df.format(x);
