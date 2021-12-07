@@ -68,8 +68,6 @@ public class Ex2 {
         DirectedWeightedGraphAlgorithms alg = getGrapgAlgo(json_file);
         Canvas canvas = new Canvas(alg.getGraph());
         canvas.setVisible(true);
-
-
     }
 
     public static void main(String[] args) {
