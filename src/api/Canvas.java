@@ -29,7 +29,8 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     JPanel scanPanel, graphPanel;
     int src, dest;
     double weight;
-    boolean PaintShortedPath=false;
+    boolean PaintShortedPath = false;
+    boolean AfterLoad=false;
     List<NodeData> path;
     double dist;
     JButton shortedPathBtn;
@@ -73,6 +74,8 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         center = new MenuItem("center point");
         tsp = new MenuItem("tsp");
         center.addActionListener(this);
+        save.addActionListener(this);
+        load.addActionListener(this);
         shorted_path.addActionListener(this);
         shorted_path_distance.addActionListener(this);
         is_connected.addActionListener(this);
@@ -227,31 +230,36 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             g.fillOval((int) centerOn.getLocation().x() - R, (int) centerOn.getLocation().y() - R, R * 3, R * 3);
             centerOn = null;
         }
-        if(PaintShortedPath){
+        if (PaintShortedPath) {
             drawShortPath(g);
             path.clear();
-            PaintShortedPath=false;
+            PaintShortedPath = false;
+        }
+        if(AfterLoad){
+            runCan();
+            AfterLoad=false;
         }
     }
-   private void drawShortPath(Graphics g){
-       NodeData pre=null;
-       int x_p=0;
-       int y_p=0;
-       System.out.println(path);
-       for (NodeData n : path) {
-           Color color = new Color(58, 213, 131);
-           g.setColor(color);
-           int x = (int) n.getLocation().x() - R;
-           int y = (int) n.getLocation().y() - R;
-           g.fillOval(x, y, R * 3, R * 3);
-           if(pre!=null) {
-               g.drawLine(x, y, x_p, y_p);
-           }
-           pre = n;
-           x_p = x;
-           y_p = y;
-       }
-   }
+
+    private void drawShortPath(Graphics g) {
+        NodeData pre = null;
+        int x_p = 0;
+        int y_p = 0;
+        System.out.println(path);
+        for (NodeData n : path) {
+            Color color = new Color(58, 213, 131);
+            g.setColor(color);
+            int x = (int) n.getLocation().x() - R;
+            int y = (int) n.getLocation().y() - R;
+            g.fillOval(x, y, R * 3, R * 3);
+            if (pre != null) {
+                g.drawLine(x + R, y + R, x_p, y_p);
+            }
+            pre = n;
+            x_p = x + R;
+            y_p = y + R;
+        }
+    }
 
     public void DrawNode(NodeData node, int r, Graphics2D g) {
         GeoLocation loc = node.getLocation();
@@ -284,7 +292,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             repaint();
         } else if (e.getSource() == load) {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            //fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();

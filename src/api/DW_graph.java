@@ -1,5 +1,6 @@
 package api;
 
+
 import api.DirectedWeightedGraph;
 import api.EdgeData;
 import api.NodeData;
@@ -37,13 +38,6 @@ public class DW_graph implements DirectedWeightedGraph {
         return parents;
     }
 
-    public void setChildren(HashMap<Integer, HashMap<Integer, EdgeData>> children) {
-        this.children = children;
-    }
-
-    public void setParents(HashMap<Integer, HashMap<Integer, EdgeData>> parents) {
-        this.parents = parents;
-    }
 
     @Override
     public NodeData getNode(int key) {
@@ -81,12 +75,17 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public void connect(int src, int dest, double w) {
-        EdgeData edgeC = new Edge(src, dest, w);
-        EdgeData edgeP = new Edge(dest, src, w);
-        this.children.get(src).put(dest, edgeC);
-        this.parents.get(dest).put(src, edgeP);
+        Edge edge = new Edge(src, dest, w);
+        this.children.get(src).put(dest, edge);
+        this.parents.get(dest).put(src, edge);
         edgesCount++;
         MC++;
+    }
+    public void setChildren(HashMap<Integer, HashMap<Integer, EdgeData>> children) {
+        this.children = children;
+    }
+    public void setParents(HashMap<Integer, HashMap<Integer, EdgeData>> parents) {
+        this.parents = parents;
     }
 
     /**
