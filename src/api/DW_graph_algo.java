@@ -22,8 +22,9 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public void init(DirectedWeightedGraph g) {
-
         this.graph = g;
+        DW_graph g1 = (DW_graph) graph;
+        g1.setMC(0);
     }
 
     @Override

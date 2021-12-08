@@ -307,7 +307,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         filedWeight.setText("");
     }
 
-    private boolean setText(){
+    private boolean setJtext(){
         try {
             src = Integer.parseInt(fieldSrc.getText());
             dest = Integer.parseInt(filedDest.getText());
@@ -335,7 +335,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         if (e.getSource() == center) {
             graph_algo.init(graph);
             if(centerOn==null){
-                JOptionPane.showMessageDialog(this,"The graph is not connected, can't find center");
+                JOptionPane.showMessageDialog(this,"The graph is not connected,\ncan't find center");
             }
             else{
                 this.centerOn = graph_algo.center();
@@ -358,11 +358,10 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 graph_algo.save(fileToSave.getAbsolutePath()+".json");
-                System.out.println("saved" + this.graph);
             }
 
         } else if (e.getSource() == shortedPathBtn) {
-            if (setText() && correctInput()) {
+            if (setJtext() && correctInput()) {
                 graph_algo.init(graph);
                 double dist = graph_algo.shortestPathDist(src, dest);
                 path = graph_algo.shortestPath(src, dest);
@@ -372,6 +371,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                     path = graph_algo.shortestPath(src, dest);
                     PaintShortedPath = true;
                     JOptionPane.showMessageDialog(this, "The dist between " + src + " and " + dest + " is: " + dist);
+                    clearText();
                     repaint();
                 }
             }
@@ -397,7 +397,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             }
 
         } else if (e.getSource() == removeEdgeBtn) {
-            if (setText() && correctInput()){
+            if (setJtext() && correctInput()){
                 graph.removeEdge(src, dest);
                 graph_algo.init(graph);
                 System.out.println("graph:"+graph);
@@ -420,7 +420,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             graph_algo.init(graph);
             List<NodeData> input= new ArrayList<>();
             String getMessage = JOptionPane.showInputDialog(this, "Enter keys Of Cities: (Example:1 2 3 4)");
-            JOptionPane.showMessageDialog(this, "you want to find TSP of: "+getMessage);
             String[] tmp= getMessage.split(" ");
             for(String n: tmp){
                 input.add(graph.getNode(Integer.parseInt(n)));

@@ -4,6 +4,7 @@ import api.DirectedWeightedGraph;
 import api.EdgeData;
 import api.NodeData;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,6 +25,9 @@ public class DW_graph implements DirectedWeightedGraph {
 
     }
 
+    public void setMC(int MC) {
+        this.MC = MC;
+    }
 
     public HashMap<Integer, NodeData> getNodes() {
         return nodes;
@@ -96,8 +100,7 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        Iterator<NodeData> nodeIter = this.nodes.values().iterator();
-        return nodeIter;
+        return this.nodes.values().iterator();
     }
 
     /**
@@ -125,32 +128,44 @@ public class DW_graph implements DirectedWeightedGraph {
         return allEdge.iterator();
     }
 
+
     @Override
     public NodeData removeNode(int key) {
-        NodeData node = nodes.get(key);
-        Iterator<EdgeData> iter = this.edgeIter();
-        while (iter.hasNext()) {
-            EdgeData tmp = iter.next();
-            int src = tmp.getSrc();
-            int dest = tmp.getDest();
-            if (src == key || dest == key) {
-                removeEdge(src, dest);
-                MC--;
+        try {
+            NodeData node = nodes.get(key);
+            Iterator<EdgeData> iter = this.edgeIter();
+            while (iter.hasNext()) {
+                EdgeData tmp = iter.next();
+                int src = tmp.getSrc();
+                int dest = tmp.getDest();
+                if (src == key || dest == key) {
+                    removeEdge(src, dest);
+                    MC--;
+                }
             }
+            nodes.remove(key);
+            MC++;
+            return node;
+        }catch (Exception e){
+            System.out.println("incorrect key");
+            return null;
         }
-        nodes.remove(key);
-        MC++;
-        return node;
     }
 
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        EdgeData edge = children.get(src).get(dest);
-        children.get(src).remove(dest);
-        parents.get(dest).remove(src);
-        edgesCount--;
-        MC++;
-        return edge;
+        try {
+            EdgeData edge = children.get(src).get(dest);
+            children.get(src).remove(dest);
+            parents.get(dest).remove(src);
+            edgesCount--;
+            MC++;
+            return edge;
+        }catch (Exception e){
+            System.out.println("not exist edge");
+            return null;
+        }
+
     }
 
     @Override

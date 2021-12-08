@@ -6,6 +6,7 @@ import com.google.gson.*;
 import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -75,6 +76,8 @@ public class Ex2 {
         DirectedWeightedGraph dw = getGrapg("data/1000Nodes.json");
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
         algo.init(dw);
+        algo.save("C:\\Users\\PC\\IdeaProjects\\Ex2\\data\\renana.json");
+
 //        algo.save("try3.json");
 //        System.out.println(algo.isConnected());
         runGUI("data/G1.json");
