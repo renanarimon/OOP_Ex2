@@ -334,11 +334,11 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         DirectedWeightedGraphAlgorithms graph_algo = new DW_graph_algo();
         if (e.getSource() == center) {
             graph_algo.init(graph);
+            this.centerOn = graph_algo.center();
             if(centerOn==null){
                 JOptionPane.showMessageDialog(this,"The graph is not connected,\ncan't find center");
             }
             else{
-                this.centerOn = graph_algo.center();
                 repaint();
             }
         } else if (e.getSource() == load) {
