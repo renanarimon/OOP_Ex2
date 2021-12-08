@@ -22,7 +22,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public void init(DirectedWeightedGraph g) {
-        
+
         this.graph = g;
     }
 
@@ -252,96 +252,19 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 }
 
 
-//    @Override
-//    public List<NodeData> tsp(List<NodeData> cities) {
-//        if (!isConnected()) {
-//            return null;
-//        }
-//        List<NodeData> ans = new LinkedList<>();
-//        ans.add(cities.remove(0));
-//        NodeData currNode = ans.get(0);
-//        double minDist = Integer.MAX_VALUE;
-//        NodeData bestNode = null;
-//        while (!cities.isEmpty()) {
-//            for (NodeData nodeData : cities) {
-//                double tmpDist = shortestPathDist(currNode.getKey(), nodeData.getKey());
-//                if (tmpDist < minDist) {
-//                    minDist = tmpDist;
-//                    bestNode = nodeData;
-//                }
-//            }
-//            ans.add(bestNode);
-//            cities.remove(bestNode);
-//            currNode = bestNode;
-//            minDist = INFINITY;
-//        }
-//        return ans;
-//    }
     @Override
     public boolean save(String file) {
-        JSONObject obj = new JSONObject();
-        JSONArray Nodes = new JSONArray();
-        JSONArray Edges = new JSONArray();
-
-        Iterator<NodeData> iterNode = graph.nodeIter();
-        while (iterNode.hasNext()) {
-            NodeData tmpN = iterNode.next();
-            JSONObject node = new JSONObject();
-            try {
-                node.put("pos", tmpN.getLocation().toString());
-                node.put("id", tmpN.getKey());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Nodes.put(node);
-        }
-
-        Iterator<EdgeData> iterE = graph.edgeIter();
-        while (iterE.hasNext()) {
-            EdgeData e = iterE.next();
-            JSONObject edge = new JSONObject();
-            try {
-                edge.put("src", e.getSrc());
-                edge.put("w", e.getWeight());
-                edge.put("dest", e.getDest());
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
-            Edges.put(edge);
-        }
         try {
-//            GsonBuilder gsonBuilder = new GsonBuilder();
-//            gsonBuilder.setPrettyPrinting();
-//            Gson gson = gsonBuilder.create();
-            obj.putOpt("Edges", Edges);
-            obj.putOpt("Nodes", Nodes);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(file);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileWriter fw = new FileWriter(file);
+            FormalGraph fg = new FormalGraph(this);
+            gson.toJson(fg, fw);
+            fw.close();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-        try {
-            assert fileWriter != null;
-            fileWriter.write(obj.toString());
-            return true; // successful saved to file
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                assert fileWriter != null;
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return false; // unsuccessful saved to file
     }
 
     @Override

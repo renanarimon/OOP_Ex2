@@ -6,6 +6,7 @@ import com.google.gson.*;
 import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
 
 /**
  * This class is the main class for Ex2 - your implementation will be tested using this class.
@@ -74,9 +75,9 @@ public class Ex2 {
         DirectedWeightedGraph dw = getGrapg("data/1000Nodes.json");
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
         algo.init(dw);
-        System.out.println(algo.isConnected());
-
-//        runGUI("data/G1.json");
+//        algo.save("try3.json");
+//        System.out.println(algo.isConnected());
+        runGUI("data/G1.json");
 
 
     }

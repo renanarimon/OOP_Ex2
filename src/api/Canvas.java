@@ -4,16 +4,15 @@ package api;/*
  * @auther Renana Rimon
  */
 
-import java.awt.Shape;
-
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Line2D;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,12 +20,13 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     DirectedWeightedGraph graph;
 
     final double EPSILON = 1E-5;
-    int Width = 500;
-    int Height = 500;
+    int Width = 700;
+    int Height = 700;
     int R = 5;
 
     JTextField fieldSrc, filedDest, filedWeight;
-    JPanel scanPanel, graphPanel;
+    JPanel scanPanel;
+
     int src, dest;
     double weight;
     boolean PaintShortedPath = false;
@@ -38,9 +38,12 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     JButton removeEdgeBtn;
 
     MenuBar menuBar;
-    MenuItem Edit, geo, save, load, is_connected, shorted_path, shorted_path_distance, center, tsp;
-    Menu menu, File, Algo;
+    MenuItem Edit, geo, save, load, is_connected, removeNode, center, tsp, SgeoLocation, Sweight;
+    Menu Show, File, Algo;
     NodeData centerOn = null;
+
+    Color colorGry= new Color(54, 47, 47);
+
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
@@ -54,63 +57,60 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.setBounds(0, 0, Width - 100, Height - 100);
         this.setSize(Width, Height);
         this.setResizable(false);
+        this.setBackground(colorGry);
         this.addMouseListener(this);
         scaleGarph();
         setMenu();
-        setGraphPanel();
         setScanPanel();
     }
 
     private void setMenu() {
         menuBar = new MenuBar();
-        menu = new Menu("Menu");
 
         Edit = new MenuItem("Edit Graph");
         geo = new MenuItem("Show/hide Geo Location");
         save = new MenuItem("Save");
         load = new MenuItem("load");
         is_connected = new MenuItem("is connected");
-        shorted_path = new MenuItem("shorted path");
-        shorted_path_distance = new MenuItem("shorted path");
+        removeNode = new MenuItem("remove node");
         center = new MenuItem("center point");
         tsp = new MenuItem("tsp");
+        SgeoLocation = new MenuItem("geo location");
+
         center.addActionListener(this);
         save.addActionListener(this);
         load.addActionListener(this);
-        shorted_path.addActionListener(this);
-        shorted_path_distance.addActionListener(this);
+        removeNode.addActionListener(this);
+        tsp.addActionListener(this);
         is_connected.addActionListener(this);
+        SgeoLocation.addActionListener(this);
 
         File = new Menu("File");
         Algo = new Menu("Algorithm");
+        Show = new Menu("Show/Hide");
+
         File.add(save);
         File.add(load);
         Algo.add(is_connected);
-        Algo.add(shorted_path_distance);
-        Algo.add(shorted_path);
+        Algo.add(removeNode);
         Algo.add(center);
         Algo.add(tsp);
+        Show.add(SgeoLocation);
 
-//        menu.add(File);
-//        menu.add(Algo);
-//        menu.add(Edit);
-//        menu.add(geo);
         menuBar.add(File);
+        menuBar.add(Show);
         menuBar.add(Algo);
-//        menuBar.add(Edit);
-
         this.setMenuBar(menuBar);
 
     }
 
-    private void setGraphPanel(){
-        graphPanel = new JPanel();
-
-
-    }
 
     private void setScanPanel() {
         scanPanel = new JPanel();
+        String title = "ENTER NUMBERS HERE";
+        Border border = BorderFactory.createTitledBorder(title);
+        scanPanel.setBorder(border);
+
         shortedPathBtn = new JButton("shorted Path");
         addEdgeBtn = new JButton("add Edge");
         removeEdgeBtn = new JButton("remove Edge");
@@ -135,10 +135,10 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         scanPanel.add(shortedPathBtn);
         scanPanel.add(addEdgeBtn);
         scanPanel.add(removeEdgeBtn);
-        scanPanel.setBounds(0, 0, 100, 100);
+        scanPanel.setBounds((int) (Width-Width*0.4), (int) (Height-Height*0.25), (int) (Width*0.4), (int) (Height*0.25));
 
         this.add(scanPanel);
-
+        this.getContentPane().setLayout(null);
         fieldSrc.addActionListener(this);
     }
 
@@ -220,16 +220,41 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     public void paintComponents(Graphics g) {
         super.paintComponents(g);
         Graphics2D g2D = (Graphics2D) g;
-        Iterator<NodeData> iterN = graph.nodeIter();
-        while (iterN.hasNext()) {
-            DrawNode(iterN.next(), R, g2D);
-        }
         Iterator<EdgeData> iterE = graph.edgeIter();
         while (iterE.hasNext()) {
             DrawEdge(iterE.next(), g2D);
         }
+        Iterator<NodeData> iterN = graph.nodeIter();
+        while (iterN.hasNext()) {
+            DrawNode(iterN.next(), R, g2D);
+        }
+
+        if (isGeoloc ==1){
+            iterN = graph.nodeIter();
+            while (iterN.hasNext()){
+                Node node = (Node) iterN.next();
+                GeoLocation loc = node.getLocation();
+                GeoLocation oldLoc = node.getOldLocation();
+                String pos = oldLoc.toString();
+                g.drawString(pos, (int) loc.x() + 9, (int) loc.y() + 3);
+            }
+        }
+//        if (isWeight == 1){
+//            iterE = graph.edgeIter();
+//            while (iterE.hasNext()){
+//                EdgeData edge = iterE.next();
+//                Geo_Location locSrc = (Geo_Location) graph.getNode(edge.getSrc()).getLocation();
+//                Geo_Location locDest = (Geo_Location) graph.getNode(edge.getDest()).getLocation();
+//                int midx = (int) ((locSrc.x() + locDest.x())/2);
+//                int midy = (int) ((locSrc.y() + locDest.y())/2);
+//                DecimalFormat df = new DecimalFormat("#.##");
+//                String w = df.format(edge.getWeight());
+//                g.drawString(w, midx, midy);
+//            }
+//        }
+
         if (centerOn != null) {
-            g.setColor(Color.BLUE);
+            g.setColor(Color.YELLOW);
             g.fillOval((int) centerOn.getLocation().x() - R, (int) centerOn.getLocation().y() - R, R * 3, R * 3);
             centerOn = null;
         }
@@ -244,7 +269,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         }
     }
 
-    private void drawShortPath(Graphics g) {
+    private void drawPath(Graphics g, List<NodeData> list) {
         NodeData pre = null;
         int x_p = 0;
         int y_p = 0;
@@ -254,10 +279,11 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             g.setColor(color);
             int x = (int) n.getLocation().x() - R;
             int y = (int) n.getLocation().y() - R;
-            g.fillOval(x, y, R * 3, R * 3);
             if (pre != null) {
-                g.drawLine(x + R, y + R, x_p, y_p);
+                Arrow arrow = new Arrow(x_p, y_p,x + R, y + R, color, 3);
+                arrow.draw(g);
             }
+            g.fillOval(x, y, R * 3, R * 3);
             pre = n;
             x_p = x + R;
             y_p = y + R;
@@ -271,8 +297,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         Color pink = new Color(219, 17, 111);
         g.setColor(Color.BLACK);
         g.drawString("" + node.getKey(), (int) loc.x(), (int) (loc.y() - 10));
-        String pos = oldLoc.toString();
-        g.drawString(pos, (int) loc.x() + 9, (int) loc.y() + 3);
         g.setColor(pink);
         g.fillOval((int) loc.x() - r, (int) loc.y() - r, r * 2, r * 2);
 
@@ -281,9 +305,36 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     private void DrawEdge(EdgeData edge, Graphics2D g) {
         Geo_Location locSrc = (Geo_Location) graph.getNode(edge.getSrc()).getLocation();
         Geo_Location locDest = (Geo_Location) graph.getNode(edge.getDest()).getLocation();
-        Shape line = new Line2D.Double(locSrc.x(), locSrc.y(), locDest.x(), locDest.y());
-        g.setColor(Color.black);
-        g.draw(line);
+        Arrow arrow = new Arrow((int)locSrc.x(), (int)locSrc.y(), (int)locDest.x(), (int)locDest.y(), black, 2);
+        arrow.draw(g);
+    }
+
+    private void clearText(){
+        fieldSrc.setText("");
+        filedDest.setText("");
+        filedWeight.setText("");
+    }
+
+    private boolean setText(){
+        try {
+            src = Integer.parseInt(fieldSrc.getText());
+            dest = Integer.parseInt(filedDest.getText());
+            return true;
+        } catch (Exception exception){
+            JOptionPane.showMessageDialog(this, "please enter new numbers!\n (src, dest)");
+            clearText();
+            return false;
+        }
+    }
+
+    private boolean correctInput(){
+        if (src<0 || dest<0 || src> graph.nodeSize() || dest> graph.nodeSize() || src==dest){
+            JOptionPane.showMessageDialog(this, "nodes do not exist in the graph\n" +
+                    "please enter new numbers!\n (src, dest, weight)");
+            clearText();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -295,7 +346,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             repaint();
         } else if (e.getSource() == load) {
             JFileChooser fileChooser = new JFileChooser();
-            //fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
@@ -308,33 +358,50 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         } else if (e.getSource() == save) {
 
         } else if (e.getSource() == shortedPathBtn) {
-            src = Integer.parseInt(fieldSrc.getText());
-            dest = Integer.parseInt(filedDest.getText());
-            System.out.println(src);
-            graph_algo.init(graph);
-            dist = graph_algo.shortestPathDist(src, dest);
-            path = graph_algo.shortestPath(src, dest);
-            PaintShortedPath = true;
-            repaint();
+            if (setText() && correctInput()) {
+                graph_algo.init(graph);
+                double dist = graph_algo.shortestPathDist(src, dest);
+                path = graph_algo.shortestPath(src, dest);
+                if (dist == -1) {
+                    JOptionPane.showMessageDialog(this, "there is no path between" + src + " and " + dest);
+                } else {
+                    path = graph_algo.shortestPath(src, dest);
+                    PaintShortedPath = true;
+                    JOptionPane.showMessageDialog(this, "The dist between " + src + " and " + dest + " is: " + dist);
+                    repaint();
+                }
+            }
+
+
         } else if (e.getSource() == addEdgeBtn) {
-            src = Integer.parseInt(fieldSrc.getText());
-            dest = Integer.parseInt(filedDest.getText());
-            weight = Double.parseDouble(filedWeight.getText());
-            EdgeData edge = new Edge(src, dest, weight);
-            graph.connect(src, dest, weight);
-            graph_algo.init(graph);
-            System.out.println(graph.getNode(src));
-            DrawEdge(edge, (Graphics2D) getGraphics());
-            fieldSrc.setText("");
-            filedDest.setText("");
-            filedWeight.setText("");
+            try {
+                src = Integer.parseInt(fieldSrc.getText());
+                dest = Integer.parseInt(filedDest.getText());
+                weight = Double.parseDouble(filedWeight.getText());
+            } catch (Exception exception){
+                JOptionPane.showMessageDialog(this, "please enter new numbers!\n (src, dest, weight)");
+                clearText();
+                return;
+            }
+            if(correctInput()) {
+                EdgeData edge = new Edge(src, dest, weight);
+                graph.connect(src, dest, weight);
+                graph_algo.init(graph);
+                System.out.println(graph.getNode(src));
+                DrawEdge(edge, (Graphics2D) getGraphics());
+                clearText();
+            }
+
         } else if (e.getSource() == removeEdgeBtn) {
-            src = Integer.parseInt(fieldSrc.getText());
-            dest = Integer.parseInt(filedDest.getText());
-            graph.removeEdge(src, dest);
-            graph_algo.init(graph);
-            System.out.println(graph);
-            repaint();
+            if (setText() && correctInput()){
+                graph.removeEdge(src, dest);
+                graph_algo.init(graph);
+                System.out.println("graph:"+graph);
+                System.out.println("algo:"+graph_algo.getGraph());
+                removed = true;
+                repaint();
+            }
+
         }
 
     }
