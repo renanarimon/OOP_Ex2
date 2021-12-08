@@ -121,7 +121,8 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     public double shortestPathDist(int src, int dest) {
         List<NodeData> path = shortestPath(src, dest);
         if (path != null) {
-            return graph.getNode(dest).getWeight();
+            if(graph.getNode(dest).getWeight()!=INFINITY)
+                return graph.getNode(dest).getWeight();
         }
 
         return -1;
@@ -244,7 +245,9 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         NodeData bestNode;
         while (!cities.isEmpty()) {
             bestNode = minShortPath(currNode.getKey(), cities);
-            ans.add(bestNode);
+            List<NodeData> put= shortestPath(currNode.getKey(),bestNode.getKey());
+            put.remove(0);
+            ans.addAll(put);
             cities.remove(bestNode);
             currNode = bestNode;
         }

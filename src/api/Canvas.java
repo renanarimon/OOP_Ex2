@@ -23,16 +23,22 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     int Width = 700;
     int Height = 700;
     int R = 5;
+    Color black = new Color(37, 21, 29, 255);
+    Color pink= new Color(243, 9, 79);
 
     JTextField fieldSrc, filedDest, filedWeight;
     JPanel scanPanel;
 
     int src, dest;
     double weight;
-    boolean PaintShortedPath = false;
-    boolean AfterLoad=false;
     List<NodeData> path;
-    double dist;
+    List<NodeData> TSP;
+
+    boolean AfterLoad=false;
+    boolean PaintTSP= false;
+    boolean PaintShortedPath=false;
+    boolean removed = false;
+    int isGeoloc = 0;
     JButton shortedPathBtn;
     JButton addEdgeBtn;
     JButton removeEdgeBtn;
@@ -259,13 +265,18 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             centerOn = null;
         }
         if (PaintShortedPath) {
-            drawShortPath(g);
+            drawPath(g,path);
             path.clear();
-            PaintShortedPath = false;
+            PaintShortedPath=false;
         }
         if(AfterLoad){
             runCan();
             AfterLoad=false;
+        }
+        if(PaintTSP){
+            drawPath(g,TSP);
+            TSP.clear();
+            PaintTSP=false;
         }
     }
 
@@ -273,8 +284,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         NodeData pre = null;
         int x_p = 0;
         int y_p = 0;
-        System.out.println(path);
-        for (NodeData n : path) {
+        for (NodeData n : list) {
             Color color = new Color(58, 213, 131);
             g.setColor(color);
             int x = (int) n.getLocation().x() - R;
@@ -292,10 +302,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     public void DrawNode(NodeData node, int r, Graphics2D g) {
         GeoLocation loc = node.getLocation();
-        Node node1 = (Node) node;
-        GeoLocation oldLoc = node1.getOldLocation();
-        Color pink = new Color(219, 17, 111);
-        g.setColor(Color.BLACK);
+        g.setColor(Color.black);
         g.drawString("" + node.getKey(), (int) loc.x(), (int) (loc.y() - 10));
         g.setColor(pink);
         g.fillOval((int) loc.x() - r, (int) loc.y() - r, r * 2, r * 2);
@@ -342,8 +349,13 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         DirectedWeightedGraphAlgorithms graph_algo = new DW_graph_algo();
         if (e.getSource() == center) {
             graph_algo.init(graph);
-            this.centerOn = graph_algo.center();
-            repaint();
+            if(centerOn==null){
+                JOptionPane.showMessageDialog(this,"The graph is not connected, can't find center");
+            }
+            else{
+                this.centerOn = graph_algo.center();
+                repaint();
+            }
         } else if (e.getSource() == load) {
             JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showOpenDialog(this);
@@ -356,6 +368,13 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 repaint();
             }
         } else if (e.getSource() == save) {
+            JFileChooser fileChooser = new JFileChooser();
+            int userSelection = fileChooser.showSaveDialog(this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                graph_algo.save(fileToSave.getAbsolutePath()+".json");
+                System.out.println("saved" + this.graph);
+            }
 
         } else if (e.getSource() == shortedPathBtn) {
             if (setText() && correctInput()) {
@@ -402,6 +421,40 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 repaint();
             }
 
+        }
+        else if(e.getSource()==is_connected){
+            graph_algo.init(graph);
+            if(graph_algo.isConnected()) {
+                JOptionPane.showMessageDialog(this, "This Graph is Connected!");
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "This Graph is not Connected!");
+            }
+        }
+        else if(e.getSource()==tsp){
+            graph_algo.init(graph);
+            List<NodeData> input= new ArrayList<>();
+            String getMessage = JOptionPane.showInputDialog(this, "Enter keys Of Cities: (Example:1 2 3 4)");
+            JOptionPane.showMessageDialog(this, "you want to find TSP of: "+getMessage);
+            String[] tmp= getMessage.split(" ");
+            for(String n: tmp){
+                input.add(graph.getNode(Integer.parseInt(n)));
+            }
+            TSP=graph_algo.tsp(input);
+            PaintTSP=true;
+            repaint();
+        }
+        else if (e.getSource() == removeNode){
+            String getKey = JOptionPane.showInputDialog(this, "Enter key of Node to remove:");
+            int key = Integer.parseInt(getKey);
+            graph.removeNode(key);
+            graph_algo.init(graph);
+            removed = true;
+            repaint();
+        }
+        else if (e.getSource() == SgeoLocation){
+            isGeoloc = (isGeoloc == 0) ? 1 : 0;
+            repaint();
         }
 
     }
