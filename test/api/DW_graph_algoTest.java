@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
- *
  * @project Ex2
  * @auther Renana Rimon
  */class DW_graph_algoTest {

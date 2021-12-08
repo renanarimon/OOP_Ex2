@@ -7,10 +7,7 @@ package api;/*
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -245,19 +242,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 g.drawString(pos, (int) loc.x() + 9, (int) loc.y() + 3);
             }
         }
-//        if (isWeight == 1){
-//            iterE = graph.edgeIter();
-//            while (iterE.hasNext()){
-//                EdgeData edge = iterE.next();
-//                Geo_Location locSrc = (Geo_Location) graph.getNode(edge.getSrc()).getLocation();
-//                Geo_Location locDest = (Geo_Location) graph.getNode(edge.getDest()).getLocation();
-//                int midx = (int) ((locSrc.x() + locDest.x())/2);
-//                int midy = (int) ((locSrc.y() + locDest.y())/2);
-//                DecimalFormat df = new DecimalFormat("#.##");
-//                String w = df.format(edge.getWeight());
-//                g.drawString(w, midx, midy);
-//            }
-//        }
+
 
         if (centerOn != null) {
             g.setColor(Color.YELLOW);
@@ -472,8 +457,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        int x = e.getX();
-        int y = e.getY();
 
     }
 
@@ -491,6 +474,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     public void mouseExited(MouseEvent e) {
 
     }
+
 }
 
 
