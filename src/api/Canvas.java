@@ -7,7 +7,6 @@ package api;/*
 import java.awt.Shape;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +26,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     int R = 5;
 
     JTextField fieldSrc, filedDest, filedWeight;
+    JPanel scanPanel, graphPanel;
     int src, dest;
     double weight;
     boolean PaintShortedPath=false;
@@ -44,7 +43,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
-
         runCan();
     }
 
@@ -58,7 +56,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.addMouseListener(this);
         scaleGarph();
         setMenu();
-        scanSrcDest();
+        setScanPanel();
     }
 
     private void setMenu() {
@@ -89,17 +87,24 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         Algo.add(center);
         Algo.add(tsp);
 
-        menu.add(File);
-        menu.add(Algo);
-        menu.add(Edit);
-        menu.add(geo);
-        menuBar.add(menu);
-        setMenuBar(menuBar);
+//        menu.add(File);
+//        menu.add(Algo);
+//        menu.add(Edit);
+//        menu.add(geo);
+        menuBar.add(File);
+        menuBar.add(Algo);
+//        menuBar.add(Edit);
+
+        this.setMenuBar(menuBar);
 
     }
 
-    private void scanSrcDest() {
-        JPanel panel = new JPanel();
+    private void setGraphPanel(){
+
+    }
+
+    private void setScanPanel() {
+        scanPanel = new JPanel();
         shortedPathBtn = new JButton("shorted Path");
         addEdgeBtn = new JButton("add Edge");
         removeEdgeBtn = new JButton("remove Edge");
@@ -114,20 +119,19 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.fieldSrc = new JTextField(3);
         this.filedDest = new JTextField(3);
         this.filedWeight = new JTextField(5);
-        this.filedDest.setBounds(Width-50, Height-100, 20, 10);
 
-        panel.add(labSrc);
-        panel.add(fieldSrc);
-        panel.add(labDest);
-        panel.add(filedDest);
-        panel.add(labWeight);
-        panel.add(filedWeight);
-        panel.add(shortedPathBtn);
-        panel.add(addEdgeBtn);
-        panel.add(removeEdgeBtn);
-        panel.setBounds(0, 0, 100, 100);
+        scanPanel.add(labSrc);
+        scanPanel.add(fieldSrc);
+        scanPanel.add(labDest);
+        scanPanel.add(filedDest);
+        scanPanel.add(labWeight);
+        scanPanel.add(filedWeight);
+        scanPanel.add(shortedPathBtn);
+        scanPanel.add(addEdgeBtn);
+        scanPanel.add(removeEdgeBtn);
+        scanPanel.setBounds(0, 0, 100, 100);
 
-        this.add(panel);
+        this.add(scanPanel);
 
         fieldSrc.addActionListener(this);
     }
@@ -284,40 +288,41 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-                if (graph_algo.load(selectedFile.getAbsolutePath())) {
-                    graph = graph_algo.getGraph();
-                    repaint();
-                }
+                graph_algo.load(selectedFile.getAbsolutePath());
+                graph = graph_algo.getGraph();
+                System.out.println(graph);
+                AfterLoad=true;
+                repaint();
             }
-        }
-        else if(e.getSource()==shortedPathBtn){
+        } else if (e.getSource() == save) {
+
+        } else if (e.getSource() == shortedPathBtn) {
             src = Integer.parseInt(fieldSrc.getText());
             dest = Integer.parseInt(filedDest.getText());
             System.out.println(src);
             graph_algo.init(graph);
-            dist=graph_algo.shortestPathDist(src,dest);
-            path = graph_algo.shortestPath(src,dest);
-            PaintShortedPath=true;
+            dist = graph_algo.shortestPathDist(src, dest);
+            path = graph_algo.shortestPath(src, dest);
+            PaintShortedPath = true;
             repaint();
-        }
-        else if (e.getSource() == addEdgeBtn){
+        } else if (e.getSource() == addEdgeBtn) {
             src = Integer.parseInt(fieldSrc.getText());
             dest = Integer.parseInt(filedDest.getText());
             weight = Double.parseDouble(filedWeight.getText());
-            graph_algo.init(graph);
             EdgeData edge = new Edge(src, dest, weight);
             graph.connect(src, dest, weight);
-            System.out.println(graph);
+            graph_algo.init(graph);
+            System.out.println(graph.getNode(src));
             DrawEdge(edge, (Graphics2D) getGraphics());
             fieldSrc.setText("");
             filedDest.setText("");
             filedWeight.setText("");
-        }
-        else if(e.getSource() == removeEdgeBtn){
+        } else if (e.getSource() == removeEdgeBtn) {
             src = Integer.parseInt(fieldSrc.getText());
             dest = Integer.parseInt(filedDest.getText());
             graph.removeEdge(src, dest);
             graph_algo.init(graph);
+            System.out.println(graph);
             repaint();
         }
 

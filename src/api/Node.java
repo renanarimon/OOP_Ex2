@@ -21,6 +21,10 @@ public class Node implements NodeData {
         this.info = "";
     }
 
+    public NodeData getFather() {
+        return father;
+    }
+
     public GeoLocation getOldLocation() {
         return oldLocation;
     }

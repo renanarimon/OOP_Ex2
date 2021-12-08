@@ -127,44 +127,18 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     }
 
-    /**
-     * Time Complexity: O(V + E*logV)
-     *
-     * @param src  - start node
-     * @param dest - end (target) node
-     * @return
-     */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        NodeData start = graph.getNode(src);
-        NodeData end = graph.getNode(dest);
         List<NodeData> visited = new ArrayList<>();
-        PriorityQueue<NodeData> queue = new PriorityQueue<>(Comparator.comparingDouble(NodeData::getWeight));
-        Iterator<NodeData> iterN = graph.nodeIter();
-        while (iterN.hasNext()) {
-            iterN.next().setWeight(INFINITY);
-        }
-        start.setWeight(0.0);
-        queue.add(start);
-        while ((!queue.isEmpty())) {
-            NodeData curr = queue.poll();
+        dijkstra(src);
+        Node curr = (Node) graph.getNode(dest);
+        while (curr.getFather() != null){
             visited.add(curr);
-            Iterator<EdgeData> iter = graph.edgeIter(curr.getKey());
-            while (iter.hasNext()) {
-                EdgeData edge = iter.next();
-                NodeData tmp = graph.getNode(edge.getDest());
-                if (!visited.contains(tmp)) {
-                    double tmpDist = curr.getWeight() + edge.getWeight();
-                    tmp.setWeight(Math.min(tmpDist, tmp.getWeight()));
-                    queue.add(tmp);
-                    if (tmp.getKey() == end.getKey()) {
-                        visited.add(tmp);
-                        return visited;
-                    }
-                }
-            }
+            curr = (Node) curr.getFather();
         }
-        return null;
+        visited.add(graph.getNode(src));
+        Collections.reverse(visited);
+        return visited;
     }
 
     /**
@@ -182,7 +156,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         }
     }
 
-    private void shortPath(int src) {
+    private void dijkstra(int src) {
         Iterator<NodeData> iter = graph.nodeIter();
         while (iter.hasNext()) {
             Node node = (Node) iter.next();
@@ -193,7 +167,6 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
                 node.setWeight(INFINITY);
             }
         }
-        //
         PriorityQueue<NodeData> pq = new PriorityQueue<>(Comparator.comparing(NodeData::getWeight));
         iter = graph.nodeIter();
         while (iter.hasNext()) {
@@ -214,7 +187,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
 
     private double maxShortPath(int src) {
-        shortPath(src);
+        dijkstra(src);
         Iterator<NodeData> iter = getGraph().nodeIter();
         double maxW = Integer.MIN_VALUE;
         while (iter.hasNext()) {
@@ -227,7 +200,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     }
 
     private NodeData minShortPath(int src, List<NodeData> cities) {
-        shortPath(src);
+        dijkstra(src);
         double minW = Integer.MAX_VALUE;
         NodeData ans = graph.getNode(src);
         for (NodeData n : cities) {
