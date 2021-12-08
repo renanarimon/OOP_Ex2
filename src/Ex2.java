@@ -71,7 +71,7 @@ public class Ex2 {
     }
 
     public static void main(String[] args) {
-        DirectedWeightedGraph dw = getGrapg("data/10000Nodes.json");
+        DirectedWeightedGraph dw = getGrapg("data/1000Nodes.json");
         DirectedWeightedGraphAlgorithms algo = new DW_graph_algo();
         algo.init(dw);
         System.out.println(algo.isConnected());

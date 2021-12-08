@@ -57,6 +57,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.addMouseListener(this);
         scaleGarph();
         setMenu();
+        setGraphPanel();
         setScanPanel();
     }
 
@@ -103,6 +104,8 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     }
 
     private void setGraphPanel(){
+        graphPanel = new JPanel();
+
 
     }
 
