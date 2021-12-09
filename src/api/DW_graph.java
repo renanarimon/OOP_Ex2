@@ -60,8 +60,9 @@ public class DW_graph implements DirectedWeightedGraph {
     }
 
     /**
-     * initialize
-     *
+     * initialize new Node:
+     * add node to 'nodes'
+     * add key to 'children' and 'parents' for future connect edges.
      * @param n
      */
     @Override
@@ -82,6 +83,7 @@ public class DW_graph implements DirectedWeightedGraph {
      * @param src  - the source of the edge.
      * @param dest - the destination of the edge.
      * @param w    - positive weight representing the cost (aka time, price, etc) between src-->dest.
+     * @throws Exception e - if not found a path
      */
     @Override
     public void connect(int src, int dest, double w) {

@@ -74,28 +74,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void connect() {
+        graph.connect(0,2, 1);
+        assertEquals(1, graph.getEdge(0, 2).getWeight());
+
 
 
     }
 
     @Test
     void nodeIter() {
-    }
-
-    @Test
-    void edgeIter() {
+        Iterator<NodeData> iterN = graph.nodeIter();
+        int i=1;
+        while (iterN.hasNext()){
+            assertEquals(iterN.next(), graph.getNode(i++));
+        }
     }
 
     @Test
     void testEdgeIter() {
+        Iterator<EdgeData> iterE = graph.edgeIter(0);
+        int sum = 0;
+        while (iterE.hasNext()){
+            iterE.next();
+            sum++;
+        }
+        int size = graph.getChildren().get(0).size();
+        assertEquals(sum, size);
+
     }
 
     @Test
     void removeNode() {
+        int oldSize = graph.nodeSize();
+        graph.removeNode(0);
+        assertEquals(graph.nodeSize(), oldSize-1);
     }
 
     @Test
     void removeEdge() {
+        int old = graph.edgeSize();
+        graph.removeEdge(1,2);
+        assertEquals(graph.edgeSize(), old-1);
     }
 
     @Test
@@ -116,5 +135,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void getMC() {
+        assertEquals(graph.getMC(), 10);
     }
 }

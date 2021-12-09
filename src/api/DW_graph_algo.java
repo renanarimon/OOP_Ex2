@@ -129,6 +129,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
+
         List<NodeData> visited = new ArrayList<>();
         dijkstra(src, dest);
         Node curr = (Node) graph.getNode(dest);
@@ -240,9 +241,6 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        if (!isConnected()) {
-            return null;
-        }
         List<NodeData> ans = new LinkedList<>();
         NodeData currNode = cities.remove(0);
         ans.add(currNode);
