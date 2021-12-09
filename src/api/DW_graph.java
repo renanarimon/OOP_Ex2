@@ -102,7 +102,7 @@ public class DW_graph implements DirectedWeightedGraph {
     /**
      * Iterator on nodes
      *
-     * @return
+     * @return Iterator on nodes
      */
     @Override
     public Iterator<NodeData> nodeIter() {
@@ -110,9 +110,11 @@ public class DW_graph implements DirectedWeightedGraph {
     }
 
     /**
-     * Iterator on edges (children)
+     * Iterator on edges (iterate on children hashmap):
+     * all the edges are in the children hashmap- this is double hasmap so for iterate
+     * it easily lets inside the edges to a Temporary hasmap and create a Iterator
      *
-     * @return
+     * @return edge Iterator
      */
     @Override
     public Iterator<EdgeData> edgeIter() {
@@ -125,6 +127,13 @@ public class DW_graph implements DirectedWeightedGraph {
         return allEdge.iterator();
     }
 
+    /**
+     * This iterator goes over all the edges that come out of a certain node
+     * so we will go over the edges from a node within children hashmap
+     * @param node_id
+     * @return edge Iterator
+     */
+
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
         if(this.children.containsKey(node_id)) {
@@ -136,6 +145,14 @@ public class DW_graph implements DirectedWeightedGraph {
         }
         return null;
     }
+
+    /**
+     *Deletes the node (with the given ID) from the graph -
+     * and removes all edges which starts or ends at this node.
+     * with edge Iterator we can find the edges that needed to be removed
+     * @param key
+     * @return the removed Node
+     */
 
 
     @Override
@@ -160,6 +177,11 @@ public class DW_graph implements DirectedWeightedGraph {
             return null;
         }
     }
+    /**
+     *Deletes the edge (with the given src and dest) from the graph -
+     * @param src, dest
+     * @return the removed edge
+     */
 
     @Override
     public EdgeData removeEdge(int src, int dest) {

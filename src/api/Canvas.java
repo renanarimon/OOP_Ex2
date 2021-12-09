@@ -394,7 +394,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 double dist = graph_algo.shortestPathDist(src, dest);
                 path = graph_algo.shortestPath(src, dest);
                 if (dist == -1) {
-                    JOptionPane.showMessageDialog(this, "there is no path between" + src + " and " + dest);
+                    JOptionPane.showMessageDialog(this, "there is no path between " + src + " and " + dest);
                 } else {
                     path = graph_algo.shortestPath(src, dest);
                     PaintShortedPath = true;
@@ -455,8 +455,12 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 input.add(graph.getNode(Integer.parseInt(n)));
             }
             TSP=graph_algo.tsp(input);
-            PaintTSP=true;
-            repaint();
+            if(TSP!=null) {
+                PaintTSP = true;
+                repaint();
+            } else {
+                JOptionPane.showMessageDialog(this, "There is no path");
+            }
         }
         else if (e.getSource() == removeNode){
             String getKey = JOptionPane.showInputDialog(this, "Enter key of Node to remove:");

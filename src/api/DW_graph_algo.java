@@ -74,7 +74,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
 
     /**
      * BFS - search on graph
-     *
+     * https://en.wikipedia.org/wiki/Breadth-first_search
      * @param g     - graph to search (can be transposed)
      * @param start - Node to start search
      * @return int[] VISITED:
@@ -114,7 +114,13 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return trans;
     }
 
-
+    /**
+     * after dijkstra the nodes Weight are changed, so we the Path Dist between src and dest
+     * is saved on the dest node weight
+     * @param src - start node
+     * @param dest - end (target) node
+     * @return distance
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
         List<NodeData> path = shortestPath(src, dest);
@@ -126,6 +132,16 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return -1;
 
     }
+
+    /**
+     *Computes the shortest path between src to dest - as an ordered List of nodes:
+     * src--> n1-->n2-->...dest
+     * this function use dijkstra algorithm to find the shortest path
+     * if no such path --> returns null;
+     * @param src - start node
+     * @param dest - end (target) node
+     * @return the list path
+     */
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
@@ -142,7 +158,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return visited;
     }
 
-    /**
+    /** halp function for Dijkstra
      * if adding the edge make the path shorter --> add edge.
      * change the node weight.
      *
@@ -156,6 +172,12 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
             dest.setFather(src);
         }
     }
+
+    /** this algorithm find the shortest paths between nodes in a graph
+     * https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+     * @param src
+     * @param dest
+     */
 
     private void dijkstra(int src, int dest) {
         Iterator<NodeData> iter = graph.nodeIter();
@@ -192,7 +214,11 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         }
     }
 
-
+    /**
+     * with dijkstra algorithm find the node that has the maximum short path if we start from src
+     * @param src
+     * @return largest weight
+     */
     private double maxShortPath(int src) {
         dijkstra(src, -1);
         Iterator<NodeData> iter = getGraph().nodeIter();
@@ -206,6 +232,12 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return maxW;
     }
 
+    /**
+     * with dijkstra algorithm find the node that has the minimum short path if we start from src
+     * @param src
+     * @param cities
+     * @return closet NodeData
+     */
     private NodeData minShortPath(int src, List<NodeData> cities) {
         dijkstra(src, -1);
         double minW = Integer.MAX_VALUE;
@@ -219,6 +251,12 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return ans;
     }
 
+    /**
+     * Finds the NodeData which minimizes the max distance to all the other nodes.
+     *Iterate all the nodes- for each nodefind tha "Maximum short path" it has and find the minimum
+     * of all the results
+     * @returnthe Node data to which the max shortest path to all the other nodes is minimized.
+     */
 
     @Override
     public NodeData center() {
@@ -239,6 +277,14 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         return nodeAns;
     }
 
+    /**
+     *Computes a list of consecutive nodes which go over all the nodes in cities.
+     * this is greedy algorithm- first go to the node in index 0 (random)  and in each node-
+     * prefer go to the closet node (minShortPath function)
+     * @param cities
+     * @return
+     */
+
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
         List<NodeData> ans = new LinkedList<>();
@@ -247,13 +293,17 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         NodeData bestNode;
         while (!cities.isEmpty()) {
             bestNode = minShortPath(currNode.getKey(), cities);
-            List<NodeData> put= shortestPath(currNode.getKey(),bestNode.getKey());
-            put.remove(0);
-            ans.addAll(put);
-            cities.remove(bestNode);
-            currNode = bestNode;
+            if (bestNode != currNode) { // if its the same so we entered to infinity loop
+                List<NodeData> put = shortestPath(currNode.getKey(), bestNode.getKey());
+                put.remove(0);
+                ans.addAll(put);
+                cities.remove(bestNode);
+                currNode = bestNode;
+
+                return ans;
+            } else break;
         }
-        return ans;
+        return null; //there is no path
 }
 
 
