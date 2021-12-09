@@ -85,12 +85,16 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public void connect(int src, int dest, double w) {
-        EdgeData edgeC = new Edge(src, dest, w);
-        EdgeData edgeP = new Edge(dest, src, w);
-        this.children.get(src).put(dest, edgeC);
-        this.parents.get(dest).put(src, edgeP);
-        edgesCount++;
-        MC++;
+        try {
+            EdgeData edgeC = new Edge(src, dest, w);
+            EdgeData edgeP = new Edge(dest, src, w);
+            this.children.get(src).put(dest, edgeC);
+            this.parents.get(dest).put(src, edgeP);
+            edgesCount++;
+            MC++;
+        }catch (Exception e){
+            System.err.println("src/dest doesn't found");
+        }
     }
 
     /**
@@ -121,11 +125,14 @@ public class DW_graph implements DirectedWeightedGraph {
 
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        ArrayList<EdgeData> allEdge = new ArrayList<>();
-        for (int dest : this.children.get(node_id).keySet()) {
-            allEdge.add(this.children.get(node_id).get(dest));
+        if(this.children.containsKey(node_id)) {
+            ArrayList<EdgeData> allEdge = new ArrayList<>();
+            for (int dest : this.children.get(node_id).keySet()) {
+                allEdge.add(this.children.get(node_id).get(dest));
+            }
+            return allEdge.iterator();
         }
-        return allEdge.iterator();
+        return null;
     }
 
 

@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.Comparator;
+import java.util.Iterator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
@@ -12,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @auther Renana Rimon
  */class DW_graphTest {
     static DirectedWeightedGraph dw = new DW_graph();
+    DW_graph graph = (DW_graph) dw;
 
     @BeforeAll
     static void beforeAll() {
@@ -36,17 +40,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void getNode() {
+        Geo_Location g5 = new Geo_Location(1, 8, 0);
+        NodeData n5 = new Node(g5, 5);
+        graph.addNode(n5);
+        assertEquals(graph.getNode(5), n5);
+        assertNull(graph.getNode(8)); //not exist key
+
 
     }
 
     @Test
     void getEdge() {
+        EdgeData e = new Edge(1, 2, 1);
+        assertEquals(e.getSrc(), dw.getEdge(1,2).getSrc());
+        assertEquals(e.getDest(), dw.getEdge(1,2).getDest());
+        assertEquals(e.getWeight(), dw.getEdge(1,2).getWeight());
+
+
     }
 
     @Test
     void addNode() {
-        DW_graph graph = (DW_graph) dw;
+        Geo_Location g4 = new Geo_Location(3,7,0);
+        NodeData n4 = new Node(g4, 4);
+        dw.addNode(n4);
+
         assertEquals(graph.getNodes().get(0), dw.getNode(0));
+        assertEquals(graph.getNodes().get(4), n4);
+
 
 
     }
@@ -79,12 +100,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void nodeSize() {
-        assertEquals(4, dw.nodeSize());
+        assertEquals(dw.nodeSize(), graph.getNodes().size());
     }
 
     @Test
     void edgeSize() {
-        assertEquals(dw.edgeSize(), 4);
+        int sum=0;
+        Iterator<EdgeData> iter = dw.edgeIter();
+        while (iter.hasNext()){
+            iter.next();
+            sum++;
+        }
+        assertEquals(dw.edgeSize(), sum);
     }
 
     @Test

@@ -353,8 +353,9 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 repaint();
             }
         } else if (e.getSource() == save) {
+            graph_algo.init(graph);
             JFileChooser fileChooser = new JFileChooser();
-            int userSelection = fileChooser.showSaveDialog(this);
+            int userSelection = fileChooser.showSaveDialog(null);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 graph_algo.save(fileToSave.getAbsolutePath()+".json");

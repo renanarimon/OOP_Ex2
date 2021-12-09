@@ -18,7 +18,7 @@ public class Node implements NodeData {
         this.tag = 0;
         this.weight = 0.0;
         this.father = null;
-        this.info = "";
+        this.info = null;
     }
 
     public NodeData getFather() {

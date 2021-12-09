@@ -1,9 +1,6 @@
 package api;
 
 import com.google.gson.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -133,7 +130,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
         List<NodeData> visited = new ArrayList<>();
-        dijkstra(src);
+        dijkstra(src, dest);
         Node curr = (Node) graph.getNode(dest);
         while (curr.getFather() != null){
             visited.add(curr);
@@ -159,11 +156,12 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
         }
     }
 
-    private void dijkstra(int src) {
+    private void dijkstra(int src, int dest) {
         Iterator<NodeData> iter = graph.nodeIter();
         while (iter.hasNext()) {
             Node node = (Node) iter.next();
             node.setFather(null);
+            node.setInfo(null);
             if (node.getKey() == src) {
                 node.setWeight(0);
             } else {
@@ -171,26 +169,31 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
             }
         }
         PriorityQueue<NodeData> pq = new PriorityQueue<>(Comparator.comparing(NodeData::getWeight));
-        iter = graph.nodeIter();
-        while (iter.hasNext()) {
-            pq.add(iter.next());
-        }
+        NodeData srcN = graph.getNode(src);
+        pq.add(srcN);
+
 
         while (!pq.isEmpty()) {
             NodeData curr = pq.poll();
-            Iterator<EdgeData> iterE = graph.edgeIter(curr.getKey());
-            while (iterE.hasNext()) {
-                relax(iterE.next());
+            if (curr.getInfo() == null) {
+                if (curr.getKey() == dest){
+                    return;
+                }
+                curr.setInfo("v");
+                Iterator<EdgeData> iterE = graph.edgeIter(curr.getKey());
+                while (iterE.hasNext()) {
+                    EdgeData e = iterE.next();
+                    relax(e);
+                    pq.add(graph.getNode(e.getDest()));
+                }
+
             }
-            PriorityQueue<NodeData> pq2 = new PriorityQueue<>(Comparator.comparing(NodeData::getWeight));
-            pq2.addAll(pq);
-            pq = pq2;
         }
     }
 
 
     private double maxShortPath(int src) {
-        dijkstra(src);
+        dijkstra(src, -1);
         Iterator<NodeData> iter = getGraph().nodeIter();
         double maxW = Integer.MIN_VALUE;
         while (iter.hasNext()) {
@@ -203,7 +206,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     }
 
     private NodeData minShortPath(int src, List<NodeData> cities) {
-        dijkstra(src);
+        dijkstra(src, -1);
         double minW = Integer.MAX_VALUE;
         NodeData ans = graph.getNode(src);
         for (NodeData n : cities) {

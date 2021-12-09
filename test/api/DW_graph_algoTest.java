@@ -69,11 +69,14 @@ import static org.junit.jupiter.api.Assertions.*;
         tmp.add(a);
         tmp.add(b);
         assertEquals(algo.shortestPath(a.getKey(),b.getKey()),tmp);
+        assertEquals(algo.shortestPathDist(2,15),6.321707132241677);
+
     }
 
     @Test
     void center() {
-    assertEquals(8,algo.center());
+        NodeData n = algo.center();
+        assertEquals(8,n.getKey());
     }
 
     @Test
@@ -103,7 +106,12 @@ import static org.junit.jupiter.api.Assertions.*;
         ans.add(add3);
         ans.add(add4);
         ans.add(e);
-        assertEquals(algo.tsp(cities),ans);
+        algo.load("data/10000Nodes.json");
+        algo.tsp(ans);
+
+//        assertEquals(algo.tsp(cities),ans);
+//        List<NodeData> list = Arrays.asList(graph.getNode(2),graph.getNode(1),graph.getNode(0),graph.getNode(16),graph.getNode(15));
+//        assertEquals(algo.shortestPath(2,15),list);
     }
 
     @Test
