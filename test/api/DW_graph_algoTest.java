@@ -89,35 +89,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void tsp() {
-        List<NodeData> cities = new LinkedList<>();
-        NodeData a = graph.getNode(4);
-        NodeData b = graph.getNode(6);
-        NodeData c = graph.getNode(8);
-        NodeData d = graph.getNode(9);
-        NodeData e = graph.getNode(12);
-        cities.add(a);
-        cities.add(b);
-        cities.add(c);
-        cities.add(d);
-        cities.add(e);
-        List<NodeData> ans = new LinkedList<>();
-        NodeData add1 = graph.getNode(5);
-        NodeData add2 = graph.getNode(7);
-        NodeData add3 = graph.getNode(10);
-        NodeData add4 = graph.getNode(11);
-        ans.add(a);
-        ans.add(add1);
-        ans.add(b);
-        ans.add(add2);
-        ans.add(c);
-        ans.add(d);
-        ans.add(add3);
-        ans.add(add4);
-        ans.add(e);
-
-        assertEquals(algo.tsp(cities),ans);
-        List<NodeData> list = Arrays.asList(graph.getNode(2),graph.getNode(1),graph.getNode(0),graph.getNode(16),graph.getNode(15));
-        assertEquals(algo.shortestPath(2,15),list);
+//        List<NodeData> cities = new LinkedList<>();
+//        NodeData a = graph.getNode(4);
+//        NodeData b = graph.getNode(6);
+//        NodeData c = graph.getNode(8);
+//        NodeData d = graph.getNode(9);
+//        NodeData e = graph.getNode(12);
+//        cities.add(a);
+//        cities.add(b);
+//        cities.add(c);
+//        cities.add(d);
+//        cities.add(e);
+//        List<NodeData> ans = new LinkedList<>();
+//        NodeData add1 = graph.getNode(5);
+//        NodeData add2 = graph.getNode(7);
+//        NodeData add3 = graph.getNode(10);
+//        NodeData add4 = graph.getNode(11);
+//        ans.add(a);
+//        ans.add(add1);
+//        ans.add(b);
+//        ans.add(add2);
+//        ans.add(c);
+//        ans.add(d);
+//        ans.add(add3);
+//        ans.add(add4);
+//        ans.add(e);
+//
+//        assertEquals(algo.tsp(cities),ans);
+//        List<NodeData> list = Arrays.asList(graph.getNode(2),graph.getNode(1),graph.getNode(0),graph.getNode(16),graph.getNode(15));
+//        assertEquals(algo.shortestPath(2,15),list);
+        algo.load("data/10000Nodes.json");
+        List<NodeData> tsp = new ArrayList<>();
+        for (int j = 0; j < 1000  ; j++) {
+            tsp.add(algo.getGraph().getNode(j));
+        }
+        List<NodeData> test;
+        test = algo.tsp(tsp);
+        assertEquals(test, test);
     }
 
     @Test
