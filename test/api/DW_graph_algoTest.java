@@ -3,6 +3,9 @@ package api;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,21 +21,25 @@ import static org.junit.jupiter.api.Assertions.*;
     @BeforeAll
     static void beforeAll() {
         algo = new DW_graph_algo();
+        algo.load("data/10000Nodes.json");
+        graph= algo.getGraph();
 
-       // DirectedWeightedGraph graph= getGrapg("data/G1.json");
+
     }
 
     @Test
     void load() {
         algo.load("data/G1.json");
         graph=algo.getGraph();
-        assertEquals(graph.getNode(0).getLocation().toString(),"35.19589,32.10152,0.0");
-        assertEquals(graph.getNode(5).getLocation().toString(),"35.21211,32.10623,0.0");
+        assertEquals(graph.getNode(0).getLocation().toString(),"35.19589,32.10153,0.0");
+        assertEquals(graph.getNode(5).getLocation().toString(),"35.21211,32.10624,0.0");
 
     }
     @Test
     void init() {
       algo.init(graph);
+      assertEquals(graph.edgeSize(),36);
+      assertEquals(graph.nodeSize(),17);
 
     }
 
@@ -43,9 +50,9 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void copy() {
         algo.copy();
-        assertEquals(graph.getNode(0).getLocation().toString(),"35.19589,32.10152,0.0");
-        assertEquals(graph.getNode(5).getLocation().toString(),"35.21211,32.10623,0.0");
-        assertEquals(graph.getNode(16).getLocation().toString(),"35.19381,32.10241,0.0");
+        assertEquals(graph.getNode(0).getLocation().toString(),"35.19589,32.10153,0.0");
+        assertEquals(graph.getNode(5).getLocation().toString(),"35.21211,32.10624,0.0");
+        assertEquals(graph.getNode(16).getLocation().toString(),"35.19381,32.10242,0.0");
 
     }
 
@@ -58,6 +65,7 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void shortestPathDist() {
         assertEquals(algo.shortestPathDist(0,1), 1.232037506070033);
+
 
     }
 
