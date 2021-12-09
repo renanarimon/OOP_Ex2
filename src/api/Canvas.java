@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Canvas extends JFrame implements ActionListener, MouseListener {
-    DirectedWeightedGraph graph;
+public class Canvas extends JFrame implements ActionListener, MouseListener {    DirectedWeightedGraph graph;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int Width = (int) screenSize.getWidth();
     int Height = (int) screenSize.getHeight();

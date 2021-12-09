@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
     @BeforeAll
     static void beforeAll() {
         algo = new DW_graph_algo();
-        algo.load("data/10000Nodes.json");
+        algo.load("data/G1.json");
         graph= algo.getGraph();
 
 
@@ -89,22 +89,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void tsp() {
-        List<NodeData> cities= new LinkedList<>();
-        NodeData a= graph.getNode(4);
-        NodeData b= graph.getNode(6);
-        NodeData c= graph.getNode(8);
-        NodeData d= graph.getNode(9);
-        NodeData e= graph.getNode(12);
+        List<NodeData> cities = new LinkedList<>();
+        NodeData a = graph.getNode(4);
+        NodeData b = graph.getNode(6);
+        NodeData c = graph.getNode(8);
+        NodeData d = graph.getNode(9);
+        NodeData e = graph.getNode(12);
         cities.add(a);
         cities.add(b);
         cities.add(c);
         cities.add(d);
         cities.add(e);
-        List<NodeData> ans= new LinkedList<>();
-        NodeData add1= graph.getNode(5);
-        NodeData add2= graph.getNode(7);
-        NodeData add3= graph.getNode(10);
-        NodeData add4= graph.getNode(11);
+        List<NodeData> ans = new LinkedList<>();
+        NodeData add1 = graph.getNode(5);
+        NodeData add2 = graph.getNode(7);
+        NodeData add3 = graph.getNode(10);
+        NodeData add4 = graph.getNode(11);
         ans.add(a);
         ans.add(add1);
         ans.add(b);
@@ -114,12 +114,10 @@ import static org.junit.jupiter.api.Assertions.*;
         ans.add(add3);
         ans.add(add4);
         ans.add(e);
-        algo.load("data/10000Nodes.json");
-        algo.tsp(ans);
 
-//        assertEquals(algo.tsp(cities),ans);
-//        List<NodeData> list = Arrays.asList(graph.getNode(2),graph.getNode(1),graph.getNode(0),graph.getNode(16),graph.getNode(15));
-//        assertEquals(algo.shortestPath(2,15),list);
+        assertEquals(algo.tsp(cities),ans);
+        List<NodeData> list = Arrays.asList(graph.getNode(2),graph.getNode(1),graph.getNode(0),graph.getNode(16),graph.getNode(15));
+        assertEquals(algo.shortestPath(2,15),list);
     }
 
     @Test

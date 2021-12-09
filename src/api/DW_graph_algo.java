@@ -115,7 +115,7 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
     }
 
     /**
-     * after dijkstra the nodes Weight are changed, so we the Path Dist between src and dest
+     * after dijkstra the nodes Weight are changed, so we return the Path Dist between src and dest
      * is saved on the dest node weight
      * @param src - start node
      * @param dest - end (target) node
@@ -299,11 +299,12 @@ public class DW_graph_algo implements DirectedWeightedGraphAlgorithms {
                 ans.addAll(put);
                 cities.remove(bestNode);
                 currNode = bestNode;
-
-                return ans;
-            } else break;
+            }else {
+                return null;
+            }
         }
-        return null; //there is no path
+
+        return ans; //there is no path
 }
 
 
