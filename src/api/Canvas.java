@@ -9,6 +9,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,10 +23,15 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     Color white = new Color(236, 187, 211, 255);
     Color pink= new Color(243, 9, 79);
     Color colorGry= new Color(54, 47, 47);
+    Font fontBig = new Font("MV Boli", Font.PLAIN, 25);
+    Font fontMid = new Font("MV Boli", Font.PLAIN, 15);
+    Font fontLow = new Font("MV Boli", Font.PLAIN, 9);
+    String message;
 
     JTextField fieldSrc, filedDest, filedWeight;
     JPanel scanPanel, mainPanel;
 
+    int key;
     int src, dest;
     double weight;
     List<NodeData> path;
@@ -47,6 +53,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     public Canvas(DirectedWeightedGraph g) {
         this.graph = g;
+        key = graph.nodeSize();
         runCan();
     }
 
@@ -59,18 +66,25 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         this.setResizable(false);
         this.setBackground(colorGry);
         this.addMouseListener(this);
-        runAfterLoad();
-    }
-    public void runAfterLoad() {
         scaleGarph();
         setMenu();
         setMainPanel();
         setScanPanel();
-        mainPanel.revalidate();
-        scanPanel.revalidate();
-        mainPanel.repaint();
+    }
+    public void runAfterLoad() {
+        setFlags();
+        scaleGarph();
+        setMenu();
+        setMainPanel();
     }
 
+    private void setFlags(){
+        AfterLoad=false;
+        PaintTSP= false;
+        PaintShortedPath=false;
+        removed = false;
+        isGeoloc = 0;
+    }
 
     private void setMenu() {
         menuBar = new MenuBar();
@@ -126,9 +140,9 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         Border border = BorderFactory.createTitledBorder(title);
         scanPanel.setBorder(border);
         scanPanel.setBackground(white);
-        JLabel label = new JLabel("To add a Node Press on the Screen");
 
         shortedPathBtn = new JButton("shorted Path");
+        shortedPathBtn.setName("shorted Path");
         addEdgeBtn = new JButton("add Edge");
         removeEdgeBtn = new JButton("remove Edge");
         shortedPathBtn.addActionListener(this);
@@ -152,9 +166,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         scanPanel.add(shortedPathBtn);
         scanPanel.add(addEdgeBtn);
         scanPanel.add(removeEdgeBtn);
-        scanPanel.add(label);
         scanPanel.setBounds((int) (Width-Width*0.2), 0, (int) (Width*0.2), Height);
-
 
         this.add(scanPanel);
         this.getContentPane().setLayout(null);
@@ -229,6 +241,11 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         return min;
     }
 
+    void drawStringN(Graphics g, String text, int x, int y) {
+        for (String line : text.split("\n"))
+            g.drawString(line, x, y += g.getFontMetrics().getHeight());
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -238,14 +255,18 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     @Override
     public void paintComponents(Graphics g) {
         super.paintComponents(g);
+        g.setFont(fontMid);
         Graphics2D g2D = (Graphics2D) g;
+        showFirstMessage(g);
         Iterator<EdgeData> iterE = graph.edgeIter();
         while (iterE.hasNext()) {
             DrawEdge(iterE.next(), g2D);
         }
         Iterator<NodeData> iterN = graph.nodeIter();
         while (iterN.hasNext()) {
-            DrawNode(iterN.next(), R, g2D);
+            NodeData n = iterN.next();
+            DrawNode(n, R, g2D);
+            System.out.println(n.getKey());
         }
 
         if (isGeoloc ==1){
@@ -255,6 +276,7 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 GeoLocation loc = node.getLocation();
                 GeoLocation oldLoc = node.getOldLocation();
                 String pos = oldLoc.toString();
+                g.setFont(fontLow);
                 g.drawString(pos, (int) loc.x() + 9, (int) loc.y() + 3);
             }
         }
@@ -267,12 +289,14 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         }
         if (PaintShortedPath) {
             drawPath(g,path);
+            showMessage(g);
             path.clear();
             PaintShortedPath=false;
         }
         if(AfterLoad){
-            runAfterLoad();
             AfterLoad=false;
+            runAfterLoad();
+//            showMessage(g);
         }
         if(PaintTSP){
             drawPath(g,TSP);
@@ -304,11 +328,11 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     public void DrawNode(NodeData node, int r, Graphics2D g) {
         GeoLocation loc = node.getLocation();
         g.setColor(pink);
+        g.setFont(fontMid);
         g.setStroke(new BasicStroke(2));
         g.drawString("" + node.getKey(), (int) loc.x(), (int) (loc.y() - 10));
         g.setColor(pink);
         g.fillOval((int) loc.x() - r, (int) loc.y() - r, r * 2, r * 2);
-
     }
 
     private void DrawEdge(EdgeData edge, Graphics2D g) {
@@ -365,12 +389,14 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 File selectedFile = fileChooser.getSelectedFile();
                 graph_algo.load(selectedFile.getAbsolutePath());
                 graph = graph_algo.getGraph();
-                System.out.println(graph);
+                System.out.println(graph_algo.getGraph());
                 AfterLoad=true;
+                message = "graph " + selectedFile.getName() + " loaded";
                 repaint();
             }
         } else if (e.getSource() == save) {
             graph_algo.init(graph);
+            System.out.println(graph_algo.getGraph());
             JFileChooser fileChooser = new JFileChooser();
             int userSelection = fileChooser.showSaveDialog(null);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
@@ -389,7 +415,9 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
                 } else {
                     path = graph_algo.shortestPath(src, dest);
                     PaintShortedPath = true;
-                    JOptionPane.showMessageDialog(this, "The dist between " + src + " and " + dest + " is: " + dist);
+                    DecimalFormat df = new DecimalFormat("#.###");
+                    String dist1 = df.format(dist);
+                    message = "The dist between\n" + src + " and " + dest + " \nis: " + dist1;
                     clearText();
                     repaint();
                 }
@@ -421,8 +449,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
             if (setJtext() && correctInput()){
                 graph.removeEdge(src, dest);
                 graph_algo.init(graph);
-                System.out.println("graph:"+graph);
-                System.out.println("algo:"+graph_algo.getGraph());
                 removed = true;
                 repaint();
             }
@@ -468,12 +494,28 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
 
     }
 
+    private void showMessage(Graphics g){
+        g.setFont(fontBig); //set font of text
+        g.setColor(colorGry);
+        drawStringN(g, message, (int) (Width-Width*0.18), (int) (Height - Height*0.75));
+        g.setFont(fontMid);
+    }
+
+    private void showFirstMessage(Graphics g){
+        g.setFont(fontBig); //set font of text
+        g.setColor(colorGry);
+        String m = "To add a Node \nPress on the Screen";
+        drawStringN(g, m, (int) (Width - Width*0.18), (int) (Height - Height*0.15));
+        g.setFont(fontMid);
+
+    }
+
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int key = graph.nodeSize();
         GeoLocation geo = new Geo_Location(e.getX(), e.getY(), 0.0);
-        NodeData node = new Node(geo, key);
+        NodeData node = new Node(geo, key++);
         graph.addNode(node);
         DrawNode(node, R, (Graphics2D) getGraphics());
         System.out.println(graph);

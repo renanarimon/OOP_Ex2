@@ -111,8 +111,8 @@ public class DW_graph implements DirectedWeightedGraph {
 
     /**
      * Iterator on edges (iterate on children hashmap):
-     * all the edges are in the children hashmap- this is double hasmap so for iterate
-     * it easily lets inside the edges to a Temporary hasmap and create a Iterator
+     * all the edges are in the children hashmap- this is double hashmap so for iterate
+     * it easily lets inside the edges to a Temporary hashmap and create an Iterator
      *
      * @return edge Iterator
      */
