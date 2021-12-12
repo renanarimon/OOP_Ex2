@@ -50,7 +50,7 @@ Example of graph string output:<br />
   [Graph_center](https://en.wikipedia.org/wiki/Graph_center)
 - tsp():Computes a list of consecutive nodes which go over all the nodes in cities. 
   [Travelling_salesman_problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem)
-- An example of TSP in our GUI :
+- An example of TSP in our GUI : <br />
 ![image](https://user-images.githubusercontent.com/77111035/145706446-64a457dd-563f-4363-9f80-f8b257c44d55.png)
 
 
