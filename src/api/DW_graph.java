@@ -63,6 +63,7 @@ public class DW_graph implements DirectedWeightedGraph {
      * initialize new Node:
      * add node to 'nodes'
      * add key to 'children' and 'parents' for future connect edges.
+     *
      * @param n
      */
     @Override
@@ -94,7 +95,7 @@ public class DW_graph implements DirectedWeightedGraph {
             this.parents.get(dest).put(src, edgeP);
             edgesCount++;
             MC++;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("src/dest doesn't found");
         }
     }
@@ -106,7 +107,13 @@ public class DW_graph implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        return this.nodes.values().iterator();
+        try {
+            return this.nodes.values().iterator();
+        } catch (RuntimeException e) {
+            throw new RuntimeException();
+            //System.err.println("graph changed during iterate");
+            //return null;
+        }
     }
 
     /**
@@ -119,37 +126,49 @@ public class DW_graph implements DirectedWeightedGraph {
     @Override
     public Iterator<EdgeData> edgeIter() {
         ArrayList<EdgeData> allEdge = new ArrayList<>();
-        for (int src : this.children.keySet()) {
-            for (int dest : this.children.get(src).keySet()) {
-                allEdge.add(children.get(src).get(dest));
+        try {
+            for (int src : this.children.keySet()) {
+                for (int dest : this.children.get(src).keySet()) {
+                    allEdge.add(children.get(src).get(dest));
+                }
             }
+            return allEdge.iterator();
+        } catch (Exception e) {
+            System.err.println("graph changed during iterate");
+            return null;
         }
-        return allEdge.iterator();
+
     }
 
     /**
      * This iterator goes over all the edges that come out of a certain node
      * so we will go over the edges from a node within children hashmap
+     *
      * @param node_id
      * @return edge Iterator
      */
 
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        if(this.children.containsKey(node_id)) {
-            ArrayList<EdgeData> allEdge = new ArrayList<>();
-            for (int dest : this.children.get(node_id).keySet()) {
-                allEdge.add(this.children.get(node_id).get(dest));
-            }
-            return allEdge.iterator();
+        try {
+            if (this.children.containsKey(node_id)) {
+                ArrayList<EdgeData> allEdge = new ArrayList<>();
+                for (int dest : this.children.get(node_id).keySet()) {
+                    allEdge.add(this.children.get(node_id).get(dest));
+                }
+                return allEdge.iterator();
+            } else return null;
+        } catch (Exception e) {
+            System.err.println("graph changed during iterate");
+            return null;
         }
-        return null;
     }
 
     /**
-     *Deletes the node (with the given ID) from the graph -
+     * Deletes the node (with the given ID) from the graph -
      * and removes all edges which starts or ends at this node.
      * with edge Iterator we can find the edges that needed to be removed
+     *
      * @param key
      * @return the removed Node
      */
@@ -172,13 +191,15 @@ public class DW_graph implements DirectedWeightedGraph {
             nodes.remove(key);
             MC++;
             return node;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("incorrect key");
             return null;
         }
     }
+
     /**
-     *Deletes the edge (with the given src and dest) from the graph -
+     * Deletes the edge (with the given src and dest) from the graph -
+     *
      * @param src, dest
      * @return the removed edge
      */
@@ -192,7 +213,7 @@ public class DW_graph implements DirectedWeightedGraph {
             edgesCount--;
             MC++;
             return edge;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("not exist edge");
             return null;
         }
