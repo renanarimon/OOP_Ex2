@@ -111,8 +111,6 @@ public class DW_graph implements DirectedWeightedGraph {
             return this.nodes.values().iterator();
         } catch (RuntimeException e) {
             throw new RuntimeException();
-            //System.err.println("graph changed during iterate");
-            //return null;
         }
     }
 
@@ -133,7 +131,7 @@ public class DW_graph implements DirectedWeightedGraph {
                 }
             }
             return allEdge.iterator();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.err.println("graph changed during iterate");
             return null;
         }
@@ -158,7 +156,7 @@ public class DW_graph implements DirectedWeightedGraph {
                 }
                 return allEdge.iterator();
             } else return null;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.err.println("graph changed during iterate");
             return null;
         }

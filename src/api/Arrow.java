@@ -13,12 +13,12 @@ import java.awt.geom.AffineTransform;
 
 
 public class Arrow {
-    private static final Polygon ARROW_HEAD = new Polygon();
+    private static final Polygon HEAD = new Polygon();
 
     static {
-        ARROW_HEAD.addPoint(0, 0);
-        ARROW_HEAD.addPoint(-5, -10);
-        ARROW_HEAD.addPoint(5, -10);
+        HEAD.addPoint(0, 0);
+        HEAD.addPoint(-5, -10);
+        HEAD.addPoint(5, -10);
     }
     private final int x;
     private final int y;
@@ -38,32 +38,25 @@ public class Arrow {
     }
 
     public void draw(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2D = (Graphics2D) g;
 
-        // Calcula o ângulo da seta.
         double angle = Math.atan2(endY - y, endX - x);
 
-        g2.setColor(color);
-        g2.setStroke(new BasicStroke(thickness));
+        g2D.setColor(color);
+        g2D.setStroke(new BasicStroke(thickness));
 
-        // Desenha a linha. Corta 10 pixels na ponta para a ponta não ficar grossa.
-        g2.drawLine(x, y, (int) (endX - 10 * Math.cos(angle)), (int) (endY - 10 * Math.sin(angle)));
+        g2D.drawLine(x, y, (int) (endX - 10 * Math.cos(angle)), (int) (endY - 10 * Math.sin(angle)));
 
-        // Obtém o AffineTransform original.
-        AffineTransform tx1 = g2.getTransform();
+        AffineTransform tx1 = g2D.getTransform();
 
-        // Cria uma cópia do AffineTransform.
         AffineTransform tx2 = (AffineTransform) tx1.clone();
 
-        // Translada e rotaciona o novo AffineTransform.
         tx2.translate(endX, endY);
         tx2.rotate(angle - Math.PI / 2);
 
-        // Desenha a ponta com o AffineTransform transladado e rotacionado.
-        g2.setTransform(tx2);
-        g2.fill(ARROW_HEAD);
+        g2D.setTransform(tx2);
+        g2D.fill(HEAD);
 
-        // Restaura o AffineTransform original.
-        g2.setTransform(tx1);
+        g2D.setTransform(tx1);
     }
 }

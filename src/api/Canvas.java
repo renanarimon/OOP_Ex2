@@ -184,20 +184,16 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
     /**
      * setLocation of all nodes
      */
-    public void scaleGarph() {
-        double maxx = this.maxX();
-        double minx = this.minX();
-        double maxy = this.maxY();
-        double miny = this.minY();
+    private void scaleGarph() {
         Iterator<NodeData> iter = this.graph.nodeIter();
         while (iter.hasNext()) {
             Node node = (Node) iter.next();
             Geo_Location loc = (Geo_Location) node.getLocation();
 
-            double newX = (Width * (loc.x() - minx)) / (maxx - minx) + Width * 0.04;
-            double newY = (Height * (maxy - loc.y())) / (maxy - miny) + Height * 0.2;
-            Geo_Location gN = new Geo_Location(newX * 0.7, Height - newY * 0.7, 0);
-            node.setLocation(gN);
+            double newX = (Width * (loc.x() - maxX())) / (maxX() - minX()) + Width * 0.04;
+            double newY = (Height * (maxY() - loc.y())) / (maxY() - minY()) + Height * 0.2;
+            Geo_Location location = new Geo_Location(newX * 0.7, Height - newY * 0.7, 0);
+            node.setLocation(location);
         }
     }
 
@@ -379,15 +375,6 @@ public class Canvas extends JFrame implements ActionListener, MouseListener {
         }
     }
 
-    private boolean correctInputSrc() {
-        if (src < 0 || src > graph.nodeSize()) {
-            JOptionPane.showMessageDialog(this, "node doesn't exist in the graph\n" +
-                    "please enter new number!\n (src)");
-            clearText();
-            return false;
-        }
-        return true;
-    }
 
     private boolean correctInput() {
         if (src < 0 || dest < 0 || src > graph.nodeSize() || dest > graph.nodeSize() || src == dest) {
